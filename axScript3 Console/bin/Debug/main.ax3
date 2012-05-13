@@ -6,32 +6,17 @@
 	(
 		~[EntryPoint]
 		
-		// Set up a nested array
-		(set ^inner "inner!" "dinner?!?")
-		(set ^array 1 2 $inner 5)
-		
-		// Prints out the Length property of array[2][0] ("inner!"), 6.
-		(print $array[2][0].Length) 
-		
-		// Prints the info a function pointer holds (it has its own ToString override)
-		(print *wait)
-		
-		// Local vs Global variable priority test
-		(set ^var "Global Variable!")
-		(priorityTest "Local Variable!")
-		
-		// Display our end message and wait for a key to be pressed
+		(set ^total 0)
+		(for [1..10] *sum_function)
+		(print+ total)
+
 		(wait)
-		
-		// Implementation specific command, see specification
-		(request_quit)
 	)
 )
 
-// When accessing a variable axScriptX will default to getting the local variable.
-// However using a dollar prefix we can access global variables with the same name.
-// When accessing global variables it's therefore preferable to *always* prefix with a dollar sign.
-~(priorityTest: var | (print "Local: {0}" var) (print "Global: {0}" $var))
+~(sum_function: i | 
+    (set ^total (add $total i))
+)
 
 ~(wait:
 	(

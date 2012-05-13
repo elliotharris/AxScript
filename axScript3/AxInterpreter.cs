@@ -89,8 +89,8 @@ namespace axScript3
         
         public void For(object range, AxFunction func)
         {
-            var a = (IEnumerable<object>)range;
-            foreach(var v in a)
+            var r = (IEnumerable)range;
+            foreach(var v in r)
             {
                 var b = new Dictionary<string, object> { {func.Parameters[0], v } };
                 func.Call(this, b);	
@@ -302,7 +302,7 @@ namespace axScript3
 
                         parameters.Add(varptr);
                     }
-                    else if (funcString[start] == 't') //true keyword
+                    else if (start+4 < funcString.Length && funcString.Substring(start, 4) == "true") //true keyword
                     {
                         end = funcString.IndexOf(" ", start);
                         if (end == -1) end = funcString.Length;
@@ -312,7 +312,7 @@ namespace axScript3
                         if (_par == "true")
                             parameters.Add(true);
                     }
-                    else if (funcString[start] == 'f') // false keyword
+                    else if (start+5 < funcString.Length && funcString.Substring(start, 5) == "false") // false keyword
                     {
                         end = funcString.IndexOf(" ", start);
                         if (end == -1) end = funcString.Length;

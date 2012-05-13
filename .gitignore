@@ -1,6 +1,5 @@
-# Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
-axScript3/bin
-axScript3/obj
+*.exe
+*.dll
 
 # mstest test results
 TestResults

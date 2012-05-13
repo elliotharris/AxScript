@@ -1,0 +1,43 @@
+// (c) Blam 2011
+//
+//  Documentation
+//  axScriptX
+//
+//  Demonstates:
+//		If then else functionality.
+//		Functions as parameters.
+//		For loops.
+//		Enumerators.
+//	Notes:
+//		Functions can be defined as parameters using two braces, example: { (print "hi") }
+//		This means you can set variables as functions, and use functions as parameters.
+//		The if function takes a bool and two functions, example: (if (eq a b) {(print "a==b")} {(print "a!=b")})
+//		The for function takes in a string, an enumerator and a function, example: (for "i" [0..10] { (print i) })
+//		Enumerators can be defined in various ways:
+//			- [a..b | c]     |- Creates an enumerator from a to b (inclusive) with a difference of c (defaults to 1)
+//			- [a, b, c, d]   |- Creates an enumerator which will go over each number.
+//			- @array         |- Creates an enumerator that loops over each value in the array.
+
+~(main: 
+	(
+		~[EntryPoint]
+		(set "enum" [0, 10, 20, 30])
+		(set "enum2" [0..31 | 3])
+		(print+ enum)
+		(print+ enum2)
+		(set "arr" "this" "is" "a" "test" "!" 0 4 2 3)
+		
+		(for "element" @arr {
+			(print element) 
+		})
+
+		(set "inp" (str2num (read "Print again? 0 - no | 1 - yes")))
+		(if (eq inp 1) {
+			(forprint arr)
+		} { 
+			(print "Ok :(") 
+		})
+		
+		(print "Goodbye!")
+	)
+)

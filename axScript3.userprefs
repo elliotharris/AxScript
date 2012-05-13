@@ -1,0 +1,18 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="axScript3/ExtensionClasses.cs">
+    <Files>
+      <File FileName="axScript3/AxInterpreter.cs" Line="520" Column="62" />
+      <File FileName="axScript3/AxFunction.cs" Line="99" Column="1" />
+      <File FileName="axScript3 Console/Main.cs" Line="16" Column="15" />
+      <File FileName="axScript3/AxSharpFunctions.cs" Line="36" Column="35" />
+      <File FileName="axScript3/NetFunction.cs" Line="48" Column="3" />
+      <File FileName="axScript3/ExtensionClasses.cs" Line="28" Column="5" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <AuthorInfo Name="Elliot Harris" Email="" Copyright="Blam" Company="Blam" Trademark="Blam" />
+</Properties>

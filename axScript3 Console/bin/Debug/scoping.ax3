@@ -1,0 +1,53 @@
+// (c) Blam 2011
+//
+//  Documentation
+//  axScriptX
+//
+//  Demonstates:
+//		Variable pointers.
+//		Scoping.
+//		Checking for Null Variable Pointers (NVPs).
+//	Notes:
+//		> The scope function returns "NULL" on NVPs.
+//		> NVPs don't throw errors as they can be assigned to in functions,
+//		so it's important to be extra careful with them!
+//		> You can store Variable Pointers in variables
+//		> If you stored a Variable Pointer in another variable, you can use
+//		the pointer functions on that variable and it will fall back onto
+//		the original variable, as demonstrated below.
+
+~(main: args |
+	(
+		~[EntryPoint]
+		(print "Scope test:")
+		(set ^globalvar 100)
+		(lset ^localvar 200)
+				
+		(print "Is globalvar pointing to anything? {0}" (isset ^globalvar))
+		(print "Is localvar pointing to anything? {0}" (isset ^localvar))
+		(print "Is unset pointing to anything? {0}" (isset ^unset))
+
+		(print " ")
+
+		
+		(print "Scope of globalvar: {0}" (scope ^globalvar))
+		(print "Scope of localvar: {0}" (scope ^localvar))
+		(print "Scope of unset: {0}" (scope ^unset))
+
+		(print " ")
+	
+		// Store the pointer in a variable.
+		(set ^ptr ^globalvar)
+		// If we use set, isset, scope, etc on ptr now it will be the same as using ^globalvar.
+		// so the command below will set globalvar to 400.
+		(set ptr 400)
+		
+		(print "globalvar + localvar: {0}" (add globalvar localvar))
+		
+		(print " ")
+		
+		
+
+		(read "Press any key to exit.")
+	)
+)

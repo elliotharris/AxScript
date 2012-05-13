@@ -1,0 +1,53 @@
+// (c) Blam 2011
+//
+//  Documentation
+//  axScriptX
+//
+//  Demonstates:
+//		Basic Arrays.
+//		Non fixed length function usage.
+//		For loops.
+//		Iterators.
+//		Lambdas.
+//		Function Refference.
+//	Notes:
+//		To get an element of an array variable, you use var[x]
+//		insert, removeAt & remove can take any amount of parameters, ex:
+//			(insert nums 1 2 3 4 5 6 7 8 9 10)
+//			(removeAt nums 9 8)
+//			(remove nums 1 3 6)
+//		Prefixing an array variable with @ returns an iterator for that array.
+//		For loops are done using "for", they take in an iterator and an AxFunction, ex:
+//			(for @array *func)
+//		Lambda's are defined much like normal functions but nameless and use { } to encapsulate, ex:
+//			(for @array { x | (print x) })
+//		Function refferences are accessed by prefixing with an asterix (*), ex:
+//			~(test_func: x | (print x))
+//			(for @array *test_func)
+
+~(main: args |
+	(
+		~[EntryPoint]
+		(print "This is an example of array creation and use")
+		(set ^arrNames "Harry" "Ron" "Hermione") //Creating an array.
+		(set ^arrNames (populate arrNames))
+		(print (length arrNames))
+		(removeAt arrNames 3 1) //Remove arrNames[3] & arrNames[1]
+		(remove arrNames "David" "Ashley") //Remove "David" & "Ashely"
+		(print+ arrNames)
+		
+		//Using lambda
+		(print "Lambda:")
+		(for @arrNames { var | (print "   Element: {0}" var) })
+		
+		//Using function refference
+		(print "Refference:")
+		(for @arrNames *print_del)
+		
+		(read "\nPress Enter to continue.")
+	)
+)
+
+~(print_del: var | (print "   Element- {0}" var))
+
+~(populate: arr | (insert arr "David" "Sam" "Ashley" "Simba") (lset "return" arr))

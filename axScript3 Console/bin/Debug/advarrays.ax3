@@ -1,0 +1,32 @@
+// (c) Blam 2011
+//
+//  Documentation
+//  axScriptX
+//
+//	Demonstrates:
+//		Multidimensional arrays.
+//		print+
+//		length
+
+~(main:
+	(
+		~[EntryPoint]
+		(set "innerception" "d" "e")
+		(set "inception" "c" $innerception "f")
+		(set "arrWork"  "a" "b" $inception "g")
+		(pLength $arrWork)
+		//print+ prints out the axScriptX toString of the variable, meaning it recursively prints out array contents
+		(print+ $arrWork)
+		(print+ $arrWork[2][1][1])
+	)
+)
+
+
+~(pLength: a | (print "Length of array: {0}" (length &a)))
+
+//	Output:
+//
+//	Length of array: 4
+//	{ { a { b c } d } e f g }
+//	b
+

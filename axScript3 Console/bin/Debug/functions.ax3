@@ -1,0 +1,41 @@
+// (c) Blam 2011
+//
+//  Documentation
+//  axScriptX
+//
+//  Demonstrates:
+//		Function declaration.
+//		Variable declaration and usage.
+//		Returning a value from a function.
+//		Local scope variable setting.
+
+
+//A single tilde defines a function.
+//No tilde calls a function.
+~(main: args |
+	(
+		~[EntryPoint] //This is a tag that makes this function be called on startup.
+		(test) //call our function 'test'
+		(set "a" (str2num (read "Value of a: "))) //a = (double)input
+		(-debug "a") //prints out a global var called a and it's value.
+		(set "Result" (add $a 40)) //result = a + 40
+		(set "Result" (square $Result)) //Square it.
+		(print "(a + 40)^2 = {0}" $Result) //print out our sum.
+	)
+)
+
+//This is a custom function, it simply prints a string.
+~(test: (print "Hello World!"))
+
+//This is a custom function that uses local variables (parameters count as local variables).
+//Local variables are accessed via &name instead of the global $name.
+//lset is how we set local variables.
+//setting the local return variable sets what we return.
+~(square: num1 | (lset "return" (mult &num1 &num1)))
+
+// Output with a input as -30.23
+//
+// Hello World!
+// Value of a: -30.23
+// [-debug] "a" = -30.23
+// (a + 40)^2 = 95.452

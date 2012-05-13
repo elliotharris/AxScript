@@ -1,6 +1,6 @@
 // (c) Blam 2012
 //
-//  axScriptX
+//  AxScript
 
 ~(main: args |
 	(
@@ -22,7 +22,9 @@
 		
 		// Display our end message and wait for a key to be pressed
 		(wait)
-		(quit)
+		
+		// Implementation specific command, see specification
+		(request_quit)
 	)
 )
 

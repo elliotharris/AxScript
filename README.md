@@ -40,9 +40,9 @@ Easily add in static
 ### Dynamic variables
 
 	// AxScript
-	(set "var" 20)
+	(set ^var 20)
 	(print var)
-	(set "var" "Hi")
+	(set ^var "Hi")
 	(print var)
 	
 ### Function declarations
@@ -60,20 +60,20 @@ Easily add in static
 ### Local Variables
 
 	// AxScript
-	(set "var" 20)
+	(set ^var 20)
 	(print var) //global
-	(lset "var" 20)
+	(lset ^var 20)
 	(print var) //local overrides global lookup
-	(print &var) //force global lookup
-	(lset "var2" 200)
-	(print &var2) //throws error, no global named "var2"
+	(print $var) //force global lookup
+	(lset ^var2 200)
+	(print $var2) //throws error, no global named "var2"
 	
 ### Dynamic parameter sizes
 
 	// AxScript
 	(print "a" "b" "c")
 	(print "a")
-	(set "array" 1 2 3 4 5 6)
+	(set ^array 1 2 3 4 5 6)
 	(print "Second element: " array[2]) //prints "Second Element: 3"
 	
 	//print out all args put in.
@@ -82,10 +82,10 @@ Easily add in static
 ### Easy array creation and manipulation
 
 	// AxScript
-	(set "array" 1 2 3)
+	(set ^array 1 2 3)
 	(insert array 4 5 6)
-	(set "innerArray" 7 8 9)
-	(set "array" array innerArray 10 11 12 13)
+	(set ^innerArray 7 8 9)
+	(set ^array array innerArray 10 11 12 13)
 	(print+ array) //recursively prints all elements.
 	(print (length array))
 	(removeAt array 2)
@@ -95,13 +95,27 @@ Easily add in static
 ### Loops and enumerations
 
 	// AxScript
-	(set "enum" [0, 10, 20, 30])
-	(set "enum2" [0..31 | 3])
+	(set ^enum [0, 10, 20, 30])
+	(set ^enum2 [0..31 | 3])
 	(print+ enum)
 	(print+ enum2)
-	(set "total" 0)
+	(set ^total 0)
 	(for enum2 { i |
 		(print i)
 		(add total i)
 	})
 	(print "Total: " total)
+	
+### Function Pointers
+	
+	~(sum_function: i | 
+		(add total i)
+	)
+	
+	~(main:
+		~[EntryPoint]
+		
+		(set ^total 0)
+		(for [0..10] *sum_function)
+		(print total)
+	)

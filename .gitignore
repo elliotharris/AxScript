@@ -1,5 +1,6 @@
-*.exe
+*.exe*
 *.dll
+*.pdb
 
 # mstest test results
 TestResults

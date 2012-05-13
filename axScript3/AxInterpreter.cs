@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CSharp;
 using System.Collections;
+using System.Text;
 
 namespace axScript3
 {
@@ -29,6 +30,7 @@ namespace axScript3
             RegisterOwnFunction("if", "If");
             RegisterOwnFunction("for", "For");
             RegisterOwnFunction("goto", "GotoLabel");
+            RegisterOwnFunction("array", "Array");
         }
         
         #region Dynamic Functions
@@ -102,7 +104,7 @@ namespace axScript3
             SharpFunctions.Add(name, func);	
         }
         
-        public void Set(AxVariablePtr Var, params object[] Values)
+        public object Set(AxVariablePtr Var, params object[] Values)
         {
             if (Var.Type == VariableType.Local) throw Error("Cannot use global set to set local variable \"{0}\", please use local set instead.", Var);
             object _Values;
@@ -116,14 +118,21 @@ namespace axScript3
             }
             if(Variables.ContainsKey(Var)) Variables[Var] = _Values;
             else Variables.Add(Var, _Values);
+
+            return Variables[Var];
         }
+
+        public object Array(params object[] Values)
+        {
+            return new List<object>(Values);
+        }
+
         #endregion
         
         #region Interpreter Functions
         public void Run(string Script)
         {
-            Console.WriteLine ("axScriptX Interpreter r355 (c) Blam 2011-2012");
-            Console.WriteLine ("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#");
+            Console.WriteLine ("AxScript Interpreter r467 (c) Blam 2012");
             
             //Backup for later.
             _scriptStore = Script;
@@ -201,12 +210,45 @@ namespace axScript3
                     
                     if(funcString[start] == '"') // String
                     {
-                        int off = start;
-                        do { end = funcString.IndexOf("\"", off+1); off=end; }
-                            while(funcString[end-1] == '\\');
+                        //int off = start;
+                        //do
+                        //{
+                        //    end = funcString.IndexOf("\"", off + 1);
+                        //    off = end;
+                        //}
+                        //while (funcString[end - 1] == '\\');
 
-                        parameters.Add(funcString.Substring(start+1, end-start-1).Replace("\\\"", "\"").Replace("\\n", "\n"));	
-                        end++;
+                        StringBuilder sb = new StringBuilder();
+                        int j = start+1;
+                        bool escapeState = false;
+                        while (funcString[j] != '"' || escapeState)
+                        {
+                            if (escapeState)
+                            {
+                                if (funcString[j] == 'n') sb.Append('\n');
+                                else if (funcString[j] == '"') sb.Append('"');
+                                else if (funcString[j] == 't') sb.Append('\t');
+                                else if (funcString[j] == '0') sb.Append('\0');
+                                else if (funcString[j] == '\\') sb.Append('\\');
+                                else throw new AxException(this, "Malformed escape sequence");
+                                escapeState = false;
+                                j++;
+                                continue;
+                            }
+                            if (funcString[j] == '\\')
+                            {
+                                escapeState = true;
+                            }
+                            else
+                            {
+                                sb.Append(funcString[j]);
+                            }
+                            j++;
+                        }
+
+                        //parameters.Add(funcString.Substring(start+1, end-start-1).Replace("\\\"", "\"").Replace("\\n", "\n"));
+                        parameters.Add(sb.ToString());		
+                        end = j + 1;
                         if(end > funcString.Length) end = funcString.Length;
                     }
                     else if(char.IsDigit(funcString[start]) || funcString[start] == '-' && char.IsDigit(funcString[start+1])) // Number

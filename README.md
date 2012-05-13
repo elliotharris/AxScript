@@ -109,7 +109,7 @@ Easily add in static
 ### Function Pointers
 	
 	~(sum_function: i | 
-		(add total i)
+		(set ^total (add total i))
 	)
 	
 	~(main:

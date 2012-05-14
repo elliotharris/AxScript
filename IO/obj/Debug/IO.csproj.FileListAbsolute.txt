@@ -1,0 +1,11 @@
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\IO\bin\Debug\IO.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\IO\bin\Debug\IO.pdb
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\IO\bin\Debug\axScript3.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\IO\bin\Debug\axScript3.pdb
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\IO\obj\Debug\IO.csprojResolveAssemblyReference.cache
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\IO\obj\Debug\IO.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\IO\obj\Debug\IO.pdb
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3\bin\Debug\Ax\IO.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3\bin\Debug\Ax\IO.pdb
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3 Console\bin\Debug\Ax\IO.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3 Console\bin\Debug\Ax\IO.pdb

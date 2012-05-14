@@ -9,8 +9,8 @@ namespace axScript3
 		{
 			Dictionary<String, NetFunction> Funcs = new Dictionary<String, NetFunction>();
 			
-			Funcs.Add("print", GetFunc("PrintLine"));
-            Funcs.Add("mprint", GetFunc("Print"));
+			//Funcs.Add("print", GetFunc("PrintLine"));
+           // Funcs.Add("mprint", GetFunc("Print"));
 			Funcs.Add("add", GetFunc("Add"));
 			Funcs.Add("sub", GetFunc("Subtract"));
 			Funcs.Add("div", GetFunc("Divide"));
@@ -18,14 +18,14 @@ namespace axScript3
 			Funcs.Add("and", GetFunc("And"));
 			Funcs.Add("or", GetFunc("Or"));
             Funcs.Add("not", GetFunc("Not"));
-			Funcs.Add("read", GetFunc("ReadIn"));
-            Funcs.Add("readkey", GetFunc("ReadKey"));
+			//Funcs.Add("read", GetFunc("ReadIn"));
+            //Funcs.Add("readkey", GetFunc("ReadKey"));
 			Funcs.Add("str2num", GetFunc("StrToNum"));
 			Funcs.Add("length", GetFunc("ArrayCount"));
 			Funcs.Add("insert", GetFunc("ArrayInsert"));
 			Funcs.Add("remove", GetFunc("ArrayRemove"));
 			Funcs.Add("removeAt", GetFunc("ArrayRemoveAt"));
-			Funcs.Add("print+", GetFunc("_Print"));
+			//Funcs.Add("print+", GetFunc("_Print"));
 			Funcs.Add("toString", GetFunc("_ToString"));
 			Funcs.Add("rset", GetFunc("RefSet"));
 			Funcs.Add("lt", GetFunc("LessThan"));
@@ -146,41 +146,6 @@ namespace axScript3
             return ptr.Type == AxInterpreter.VariableType.Null ? false : true;
         }
         #endregion
-        
-        #region IO
-        public static void PrintLine(object Format, params object[] Parameters)
-		{
-			if(Format.GetType() == typeof(String))
-				Console.WriteLine ((string)Format, Parameters);
-			else
-				Console.WriteLine (Format);
-		}
-
-        public static double ReadKey(bool hide = false)
-        {
-            var c = Console.ReadKey(hide).KeyChar;
-            return c;
-        }
-		
-		public static string ReadIn(string Prompt = "")
-		{
-			Console.Write(Prompt);
-			return Console.ReadLine();
-		}
-
-        public static void Print(object Format, params object[] Parameters)
-        {
-            if (Format.GetType() == typeof(String))
-                Console.Write((string)Format, Parameters);
-            else
-                Console.Write(Format);
-        }
-		
-		public static void _Print(object Var)
-		{
-			Console.WriteLine ("{0}", Var.AdvToString());	
-		}
-		#endregion
 		
 		#region Arrays
 		public static void ArrayInsert(List<object> Array, params object[] Values)

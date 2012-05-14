@@ -10,6 +10,7 @@ namespace axScript3
     public class AxInterpreter
     {
         string _scriptStore;
+        public String Script;
         public Dictionary<String, AxFunction> Functions       = new Dictionary<String, AxFunction>();
         public Dictionary<String, NetFunction> SharpFunctions = new Dictionary<String, NetFunction>();
         public Dictionary<String, object> Variables           = new Dictionary<String, object>();
@@ -146,15 +147,15 @@ namespace axScript3
         public void Run(string Script)
         {
             Console.WriteLine ("AxScript Interpreter r467 (c) Blam 2012");
-            
+            this.Script = Script;
             //Backup for later.
             _scriptStore = Script;
-            Script = StripComments(Script);
-            
-            getFunctions(Script);
+            FirstPass();
+            Console.WriteLine(this.Script);
+            getFunctions();
             //try
             //{
-                callFunction(entryPoint, new List<object> { "axScriptX 3" });
+            callFunction(entryPoint, new List<object> { "axScriptX 3" }, new Dictionary<string, object>() { });
             //}
             //catch (Exception ex)
             //{
@@ -168,9 +169,24 @@ namespace axScript3
             //}
         }
         
-        public object callFunction(String func, List<object> parameters)
+        public object callFunction(String func, List<object> parameters, Dictionary<string, object> Locals)
         {
             CallStack.Add(func);
+
+            //Class Function Call
+            int colonPos = func.IndexOf(':');
+            if (colonPos != -1)
+            {
+                object Var = GetVar(func.Substring(0, colonPos), Locals);
+                int spacePos = func.IndexOf(' ', colonPos);
+                if (spacePos == -1) spacePos = func.Length - 1;
+                spacePos -= colonPos;
+                string Method = func.Substring(colonPos+1, spacePos);
+                int locindex = 0;
+                ExtrapolateVariable(func, colonPos, ref Var, ref locindex);
+                return new NetFunction(Var.GetType().GetMethod(Method), Var).call(parameters.ToArray());
+            }
+
             if(Functions.ContainsKey(func))
             {
                 var AxFunc = Functions[func];
@@ -295,36 +311,60 @@ namespace axScript3
                         parameters.Add(new AxFunction(_parameters, func, true));
                         end = start + extr.Item2;
                     }
-                    else if(funcString[start] == '[') // Range
+                    else if (funcString[start] == '%') // Return Lambda
+                    {
+                        var extr = extract(funcString.Substring(start+1), '{', '}');
+                        string func = extr.Item1;
+                        string[] _parameters = new string[0];
+                        int paramindex = 0;
+                        while (paramindex < func.Length && func[paramindex] != '|')
+                        {
+                            if (func[paramindex] == '(')
+                            {
+                                paramindex = -1;
+                                break;
+                            }
+                            paramindex++;
+                        }
+                        if (paramindex != -1)
+                        {
+                            _parameters = func.Substring(0, paramindex).Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            func = func.Substring(paramindex + 1);
+                        }
+
+                        parameters.Add(new AxFunction(_parameters, String.Format("(return {0})", func), true));
+                        end = start + extr.Item2 + 1;
+                    }
+                    else if (funcString[start] == '[') // Range
                     {
                         var extr = extract(funcString.Substring(start), '[', ']');
                         var str = extr.Item1;
-                        
-                        if(str.IndexOf(',') != -1)
+
+                        if (str.IndexOf(',') != -1)
                         {
                             IEnumerable<double> a = str.Split(',').Select(x => double.Parse(x));
                             parameters.Add(a);
                         }
-                        else if(str.IndexOf("..") != -1)
+                        else if (str.IndexOf("..") != -1)
                         {
                             int rangediff = 1;
                             string[] temp;
-                            if(str.IndexOf('|') != -1)
+                            if (str.IndexOf('|') != -1)
                             {
                                 temp = str.Split('|');
                                 rangediff = int.Parse(temp[1]);
                                 str = temp[0];
                             }
-                            
+
                             temp = str.Split(new string[] { ".." }, StringSplitOptions.RemoveEmptyEntries);
                             int rangestart = int.Parse(temp[0]);
                             int rangeend = int.Parse(temp[1]);
-                            
+
                             IEnumerable<int> dbl = CreateRange(rangestart, rangeend, rangediff);
-                            
+
                             parameters.Add(dbl);
                         }
-                        
+
                         end = start + extr.Item2;
                     }
                     else if (funcString[start] == '*') //function pointer
@@ -332,7 +372,7 @@ namespace axScript3
                         end = funcString.IndexOf(" ", start);
                         if (end == -1) end = funcString.Length;
 
-                        string ptrfunc = funcString.Substring(start+1, end - start -1);
+                        string ptrfunc = funcString.Substring(start + 1, end - start - 1);
 
                         if (Functions.ContainsKey(ptrfunc)) parameters.Add(Functions[ptrfunc]);
                         else throw Error("Invalid function refference: \"{0}\", function not found.", ptrfunc);
@@ -358,7 +398,7 @@ namespace axScript3
 
                         parameters.Add(varptr);
                     }
-                    else if (start+4 <= funcString.Length && funcString.Substring(start, 4) == "true") //true keyword
+                    else if (start + 4 <= funcString.Length && funcString.Substring(start, 4) == "true") //true keyword
                     {
                         end = funcString.IndexOf(" ", start);
                         if (end == -1) end = funcString.Length;
@@ -368,7 +408,7 @@ namespace axScript3
                         if (_par == "true")
                             parameters.Add(true);
                     }
-                    else if (start+5 <= funcString.Length && funcString.Substring(start, 5) == "false") // false keyword
+                    else if (start + 5 <= funcString.Length && funcString.Substring(start, 5) == "false") // false keyword
                     {
                         end = funcString.IndexOf(" ", start);
                         if (end == -1) end = funcString.Length;
@@ -418,7 +458,7 @@ namespace axScript3
                         if (end == -1) end = funcString.Length;
                         var locindex = funcString.IndexOf("[", start, end - start);
                         var loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
-                        
+
                         if (loc2index != -1 && (loc2index < locindex || locindex == -1)) locindex = loc2index;
                         if (locindex != -1) varName = funcString.Substring(start, locindex - start);
                         else varName = funcString.Substring(start, end - start);
@@ -435,7 +475,10 @@ namespace axScript3
                     spaceIndex = end + 1;
                 }
             }
-            else funcName = funcString; 
+            else funcName = funcString;
+
+            if (funcName == "")
+                return null;
 
             // HACK: Remove hacky lset.
             if(funcName == "lset") 
@@ -447,7 +490,15 @@ namespace axScript3
                 
                 return null;
             }
-            else return callFunction(funcName, parameters);
+            else if (funcName == "return")
+            {
+                object Value = parameters[0];
+                if (Params.ContainsKey("return")) Params["return"] = Value;
+                else Params.Add("return", Value);
+
+                return Value;
+            }
+            else return callFunction(funcName, parameters, Params);
         }
 
         // Checks for element indexers, and loops through them all to get to the data desired.
@@ -545,7 +596,7 @@ namespace axScript3
             Global,
         }
         
-        protected void getFunctions(string Script)
+        protected void getFunctions()
         {
             for(int i = 0; i < Script.Length; i++)
             {
@@ -623,30 +674,91 @@ namespace axScript3
                 return new Tuple<string, int>("", -1 );	
             }
         }
-        
-        public string StripComments(string Script)
+
+        public void FirstPass()
         {
+            StringBuilder sb = new StringBuilder();
             int j = 0;
-            for(int i = Script.Length-1; i > 0; i--)
-            {				
-                //Remove Comments
-                if(Script[i] == '/')
-                    if(Script[i-1] == '/')
+            bool inStr = false;
+            bool inComment = false;
+            bool inCompStatement = false;
+            StringBuilder compStateBuffer = new StringBuilder();
+            for (int i = 0; i < Script.Length-1; i++)
+            {
+                if (Script[i] == '\n')
                 {
-                    j = 1;
-                    while (j + i < Script.Length && !isNewLine(Script[j + i]))
+                    inComment = false;
+                    if (inCompStatement)
                     {
-                        j++;
+                        inCompStatement = false;
+                        var str = compStateBuffer.ToString();
+                        int split = str.IndexOf(' ');
+                        if (split != -1)
+                        {
+                            ParseCompilerStatement(str.Substring(0, split), str.Substring(split + 1));
+                        }
+                        else
+                        {
+                            ParseCompilerStatement(str, null);
+                        }
+                        compStateBuffer.Clear();
                     }
-                    Script = Script.Remove(i-1,j+2);
                 }
+                //Toggle String Mode
+                if (!inComment)
+                {
+                    if (Script[i+1] == '"')
+                        if (Script[i] != '/')
+                        {
+                            inStr = inStr ? false : true;
+                        }
+                    if (!inStr)
+                    {
+                        //Remove Comments
+                        if (Script[i] == '/')
+                            if (Script[i + 1] == '/')
+                            {
+                                inComment = true;
+                                continue;
+                            }
+                        //Remove and store Compiler Statements
+                        if (Script[i] == '#')
+                        {
+                            inCompStatement = true;
+                            continue;
+                        }
+                    }
+
+                    if (inCompStatement)
+                    {
+                        compStateBuffer.Append(Script[i]);
+                        continue;
+                    }
+
+                    sb.Append(Script[i]);
+                }
+
+                
             }
-            
+
+            Script = sb.ToString();
+
             //Remove Newlines and unimportant whitespace
-            for(int i = Script.Length-1; i > -1; i--)
-                if(isNewLine(Script[i]) || Script[i] == '\t' || ( i > 0 && Script[i] == ' ' && Script[i-1] == ' ' )) Script = Script.Remove(i, 1);
-            
-            return Script;
+            for (int i = Script.Length - 1; i > -1; i--)
+                if (isNewLine(Script[i]) || Script[i] == '\t' || (i > 0 && Script[i] == ' ' && Script[i - 1] == ' ')) Script = Script.Remove(i, 1);
+        }
+
+        private void ParseCompilerStatement(string statement, string p)
+        {
+            statement = statement.ToLower();
+            switch (statement)
+            {
+                case "module":
+                    AxModuleLoader.Load(this, p);
+                    break;
+                default:
+                    break;
+            }
         }
 
         public static bool isNewLine(char c)

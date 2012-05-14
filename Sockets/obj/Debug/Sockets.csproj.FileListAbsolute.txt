@@ -1,0 +1,7 @@
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Sockets\bin\Debug\Sockets.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Sockets\bin\Debug\Sockets.pdb
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Sockets\obj\Debug\Sockets.csprojResolveAssemblyReference.cache
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Sockets\obj\Debug\Sockets.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Sockets\obj\Debug\Sockets.pdb
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3 Console\bin\Debug\Ax\Sockets.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3 Console\bin\Debug\Ax\Sockets.pdb

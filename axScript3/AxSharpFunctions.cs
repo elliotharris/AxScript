@@ -9,16 +9,18 @@ namespace axScript3
 		{
 			Dictionary<String, NetFunction> Funcs = new Dictionary<String, NetFunction>();
 			
-			Funcs.Add("print", GetFunc("Print"));
+			Funcs.Add("print", GetFunc("PrintLine"));
+            Funcs.Add("mprint", GetFunc("Print"));
 			Funcs.Add("add", GetFunc("Add"));
 			Funcs.Add("sub", GetFunc("Subtract"));
 			Funcs.Add("div", GetFunc("Divide"));
 			Funcs.Add("mult", GetFunc("Multiply"));
 			Funcs.Add("and", GetFunc("And"));
 			Funcs.Add("or", GetFunc("Or"));
+            Funcs.Add("not", GetFunc("Not"));
 			Funcs.Add("read", GetFunc("ReadIn"));
+            Funcs.Add("readkey", GetFunc("ReadKey"));
 			Funcs.Add("str2num", GetFunc("StrToNum"));
-			Funcs.Add("readkey", GetFunc("ReadInKey"));
 			Funcs.Add("length", GetFunc("ArrayCount"));
 			Funcs.Add("insert", GetFunc("ArrayInsert"));
 			Funcs.Add("remove", GetFunc("ArrayRemove"));
@@ -28,7 +30,7 @@ namespace axScript3
 			Funcs.Add("rset", GetFunc("RefSet"));
 			Funcs.Add("lt", GetFunc("LessThan"));
 			Funcs.Add("gt", GetFunc("GreaterThan"));
-			Funcs.Add("eq", GetFunc("EqualTo"));
+            Funcs.Add("eq", GetFunc("EqualTo"));
             Funcs.Add("scope", GetFunc("ReturnScope"));
             Funcs.Add("isset", GetFunc("IsPointerValid"));
 			return Funcs;
@@ -94,9 +96,9 @@ namespace axScript3
 			return a > b;	
 		}
 		
-		public static bool EqualTo(double a, double b)
+		public static bool EqualTo(object a, object b)
 		{
-			return a == b;	
+			return a.Equals(b);	
 		}
 		
 		public static int Compare<T>(T a, T b) where T : IComparable
@@ -115,6 +117,11 @@ namespace axScript3
 			foreach(bool a in Bools) if(a) return true;
 			return false;
 		}
+
+        public static bool Not(bool input)
+        {
+            return !input;
+        }
 		#endregion
 
         #region Pointers
@@ -141,27 +148,33 @@ namespace axScript3
         #endregion
         
         #region IO
-        public static void Print(object Format, params object[] Parameters)
+        public static void PrintLine(object Format, params object[] Parameters)
 		{
 			if(Format.GetType() == typeof(String))
 				Console.WriteLine ((string)Format, Parameters);
 			else
 				Console.WriteLine (Format);
 		}
+
+        public static double ReadKey(bool hide = false)
+        {
+            var c = Console.ReadKey(hide).KeyChar;
+            return c;
+        }
 		
 		public static string ReadIn(string Prompt = "")
 		{
 			Console.Write(Prompt);
 			return Console.ReadLine();
 		}
-		
-		public static string ReadInKey(string Prompt = "", bool hide = true)
-		{
-			Console.Write(Prompt);
-			var a = Console.ReadKey(hide).KeyChar.ToString();
-			Console.WriteLine ();
-			return a;
-		}
+
+        public static void Print(object Format, params object[] Parameters)
+        {
+            if (Format.GetType() == typeof(String))
+                Console.Write((string)Format, Parameters);
+            else
+                Console.Write(Format);
+        }
 		
 		public static void _Print(object Var)
 		{

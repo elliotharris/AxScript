@@ -1,26 +1,63 @@
 // (c) Blam 2012
 //
-//  AxScript
+// AxScript
+// Output: http://i.imgur.com/VIDQD.png
 
 ~(main: args |
 	(
 		~[EntryPoint]
 		
-		(set ^total 0)
-		(for [1..10] *sum_function)
-		(print+ total)
-
-		(wait)
+		(set ^valid false)
+		(set ^go false)
+		
+		(while {(lset ^return (eq valid false))} 
+		{
+			(set ^response (read "Do you wish to continue? [y/n]\n"))
+			(ifelse (eq response "y")
+			{
+				(print "\n\nCarrying on.")
+				(set ^valid true)
+				(set ^go true)
+			}
+			{
+				(ifelse (eq response "n")
+				{
+					(print "\n\nNot carrying on.")
+					(set ^valid true)
+				}
+				{
+					(print "Invalid response!")
+				})
+			}
+			)
+		}
+		)
+		
+		
+		(if (eq go true) 
+		{ 
+			(waitForEnter "Press enter to start!" true)
+			(print "")
+			(for [0..90000] { i | 
+				(mprint "\r{0}/90000" i)
+				(lset ^perc (mult 100 (div i 90000)))
+				(mprint " ({0:0.00}%)   " perc)
+			})
+			(print "")
+		}
+		)
+		
+		(waitForEnter "Press enter to exit!" true)
 	)
 )
 
-~(sum_function: i | 
-    (set ^total (add $total i))
-)
-
-~(wait:
-	(
-		(print " ")
-		(read "Enter key to continue..")
+~(waitForEnter: msg newl | 
+	(if newl {(print "")}) 
+	(print msg)
+	(do {(lset ^return (not (eq key 13)))} 
+	{
+		(set ^key (readkey true))
+	}
 	)
 )
+

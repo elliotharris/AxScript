@@ -28,6 +28,9 @@ namespace axScript3
             RegisterOwnFunction("get", "TryGetVar");
             RegisterOwnFunction("addFunc", "AddStaticFunction");
             RegisterOwnFunction("if", "If");
+            RegisterOwnFunction("while", "While");
+            RegisterOwnFunction("do", "Do");
+            RegisterOwnFunction("ifelse", "IfElse");
             RegisterOwnFunction("for", "For");
             RegisterOwnFunction("goto", "GotoLabel");
             RegisterOwnFunction("array", "Array");
@@ -76,7 +79,12 @@ namespace axScript3
             else return null;
         }
         
-        public void If(bool Cond, AxFunction Then, AxFunction Else)
+        public void If(bool Cond, AxFunction Then)
+        {
+            if (Cond) Then.Call(this, null);
+        }
+
+        public void IfElse(bool Cond, AxFunction Then, AxFunction Else)
         {
             if(Cond) 
                 Then.Call(this, null); 
@@ -87,6 +95,11 @@ namespace axScript3
         public void While(AxFunction Cond, AxFunction Do)
         {
             while(((bool)Cond.Call(this, null) == true)) Do.Call(this, null);	
+        }
+
+        public void Do(AxFunction Cond, AxFunction Do)
+        {
+            do { Do.Call(this, null); } while (((bool)Cond.Call(this, null) == true));
         }
         
         public void For(object range, AxFunction func)
@@ -206,18 +219,10 @@ namespace axScript3
                     int start = oSpaceIndex+1;
                     int end = spaceIndex;
                     
-                    while(funcString[start] == ' ') start++;
+                    while(funcString[start] == ' ' || funcString[start] == '\n') start++;
                     
                     if(funcString[start] == '"') // String
                     {
-                        //int off = start;
-                        //do
-                        //{
-                        //    end = funcString.IndexOf("\"", off + 1);
-                        //    off = end;
-                        //}
-                        //while (funcString[end - 1] == '\\');
-
                         StringBuilder sb = new StringBuilder();
                         int j = start+1;
                         bool escapeState = false;
@@ -226,6 +231,7 @@ namespace axScript3
                             if (escapeState)
                             {
                                 if (funcString[j] == 'n') sb.Append('\n');
+                                else if (funcString[j] == 'r') sb.Append('\r');
                                 else if (funcString[j] == '"') sb.Append('"');
                                 else if (funcString[j] == 't') sb.Append('\t');
                                 else if (funcString[j] == '0') sb.Append('\0');
@@ -246,7 +252,6 @@ namespace axScript3
                             j++;
                         }
 
-                        //parameters.Add(funcString.Substring(start+1, end-start-1).Replace("\\\"", "\"").Replace("\\n", "\n"));
                         parameters.Add(sb.ToString());		
                         end = j + 1;
                         if(end > funcString.Length) end = funcString.Length;
@@ -271,7 +276,16 @@ namespace axScript3
                         var extr = extract(funcString.Substring(start), '{', '}');
                         string func = extr.Item1;
                         string[] _parameters = new string[0];
-                        int paramindex = func.IndexOf('|');
+                        int paramindex = 0;
+                        while (paramindex < func.Length && func[paramindex] != '|')
+                        {
+                            if (func[paramindex] == '(')
+                            {
+                                paramindex = -1;
+                                break;
+                            }
+                            paramindex++;
+                        }
                         if(paramindex != -1)
                         {
                             _parameters = func.Substring(0, paramindex).Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
@@ -344,7 +358,7 @@ namespace axScript3
 
                         parameters.Add(varptr);
                     }
-                    else if (start+4 < funcString.Length && funcString.Substring(start, 4) == "true") //true keyword
+                    else if (start+4 <= funcString.Length && funcString.Substring(start, 4) == "true") //true keyword
                     {
                         end = funcString.IndexOf(" ", start);
                         if (end == -1) end = funcString.Length;
@@ -354,7 +368,7 @@ namespace axScript3
                         if (_par == "true")
                             parameters.Add(true);
                     }
-                    else if (start+5 < funcString.Length && funcString.Substring(start, 5) == "false") // false keyword
+                    else if (start+5 <= funcString.Length && funcString.Substring(start, 5) == "false") // false keyword
                     {
                         end = funcString.IndexOf(" ", start);
                         if (end == -1) end = funcString.Length;

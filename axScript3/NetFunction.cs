@@ -1,5 +1,7 @@
 using System;
 using System.Reflection;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace axScript3
 {
@@ -30,26 +32,54 @@ namespace axScript3
 		}
 		
 		public object call(params object[] input)
-		{		
-		    if (hasParams)
+		{
+		    try
 		    {
-		        int lastParamPosition = Inputs.Length - 1;
+		        if (hasParams)
+		        {
+		            int lastParamPosition = Inputs.Length - 1;
 		
-		        object[] realParams = new object[Inputs.Length];
-		        for (int i = 0; i < lastParamPosition; i++)
-		            realParams[i] = input[i];
+		            object[] realParams = new object[Inputs.Length];
+		            for (int i = 0; i < lastParamPosition; i++)
+		                realParams[i] = input[i];
 		
-		        Type paramsType = Inputs[lastParamPosition].ParameterType.GetElementType();
-		        Array extra = Array.CreateInstance(paramsType, input.Length - lastParamPosition);
-		        for (int i = 0; i < extra.Length; i++)
-		            extra.SetValue(input[i + lastParamPosition], i);
+		            Type paramsType = Inputs[lastParamPosition].ParameterType.GetElementType();
+		            Array extra = Array.CreateInstance(paramsType, input.Length - lastParamPosition);
+		            for (int i = 0; i < extra.Length; i++)
+		                extra.SetValue(input[i + lastParamPosition], i);
 		
-		        realParams[lastParamPosition] = extra;
+		            realParams[lastParamPosition] = extra;
 		
-		        input = realParams;	
-		    }
+		            input = realParams;	
+		        }
+
+                // Add in defaults
+                if (input.Length < Inputs.Length)
+                {
+                    var opt_inputs = from a in Inputs where a.IsOptional select a;
+                    int i = Inputs.Length - input.Length;
+                    List<object> inps = input.ToList();
+                    foreach (var b in opt_inputs)
+                    {
+                        if (i > 0)
+                        {
+                            i++;
+                            inps.Add(b.DefaultValue);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    input = inps.ToArray();
+                }
 			
-			return Method.Invoke(Target, input);
+			    return Method.Invoke(Target, input);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Cannot complete call to C# function: \"" + Method.Name + "\", " + e.Message);
+            }
 		}
 	}
 }

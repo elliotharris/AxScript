@@ -1,20 +1,16 @@
-// (c) Blam 2012
-//
-// AxScript
+// AxScript 3
 
-#module "Ax\Sockets.dll"
-#module "Ax\IO.dll"
+#module "Ax/IO.dll"
 
 ~(main: args |
 	(
-		~[EntryPoint] 
+		~[EntryPoint]
 		
-		(set ^a 100)
-		(print "Connecting!")
-		(set ^tcp (tcp_socket "127.0.0.1" 9000))
-		(tcp:WriteLine "0Testing: {0}" a)
-		(tcp:Flush)
-		(tcp:Close)
-		(print "Done!")
+		(set ^c 0xFF00FF)
+		(print (type c))
+		(print c)
+		
+		(read "Enter to exit")
 	)
 )
+

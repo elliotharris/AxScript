@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace axScript3
 {
@@ -7,33 +8,31 @@ namespace axScript3
 	{
 		public static Dictionary<String, NetFunction> AddBaseFunctions ()
 		{
-			Dictionary<String, NetFunction> Funcs = new Dictionary<String, NetFunction>();
+			var funcs = new Dictionary<String, NetFunction>();
 			
-			//Funcs.Add("print", GetFunc("PrintLine"));
-           // Funcs.Add("mprint", GetFunc("Print"));
-			Funcs.Add("add", GetFunc("Add"));
-			Funcs.Add("sub", GetFunc("Subtract"));
-			Funcs.Add("div", GetFunc("Divide"));
-			Funcs.Add("mult", GetFunc("Multiply"));
-			Funcs.Add("and", GetFunc("And"));
-			Funcs.Add("or", GetFunc("Or"));
-            Funcs.Add("not", GetFunc("Not"));
-			//Funcs.Add("read", GetFunc("ReadIn"));
-            //Funcs.Add("readkey", GetFunc("ReadKey"));
-			Funcs.Add("str2num", GetFunc("StrToNum"));
-			Funcs.Add("length", GetFunc("ArrayCount"));
-			Funcs.Add("insert", GetFunc("ArrayInsert"));
-			Funcs.Add("remove", GetFunc("ArrayRemove"));
-			Funcs.Add("removeAt", GetFunc("ArrayRemoveAt"));
-			//Funcs.Add("print+", GetFunc("_Print"));
-			Funcs.Add("toString", GetFunc("_ToString"));
-			Funcs.Add("rset", GetFunc("RefSet"));
-			Funcs.Add("lt", GetFunc("LessThan"));
-			Funcs.Add("gt", GetFunc("GreaterThan"));
-            Funcs.Add("eq", GetFunc("EqualTo"));
-            Funcs.Add("scope", GetFunc("ReturnScope"));
-            Funcs.Add("isset", GetFunc("IsPointerValid"));
-			return Funcs;
+			funcs.Add("add", GetFunc("Add"));
+			funcs.Add("sub", GetFunc("Subtract"));
+			funcs.Add("div", GetFunc("Divide"));
+			funcs.Add("mult", GetFunc("Multiply"));
+			funcs.Add("and", GetFunc("And"));
+			funcs.Add("or", GetFunc("Or"));
+            funcs.Add("not", GetFunc("Not"));
+			funcs.Add("double", GetFunc("ToDouble"));
+            funcs.Add("int", GetFunc("ToInt"));
+			funcs.Add("length", GetFunc("ArrayCount"));
+			funcs.Add("insert", GetFunc("ArrayInsert"));
+			funcs.Add("remove", GetFunc("ArrayRemove"));
+			funcs.Add("removeAt", GetFunc("ArrayRemoveAt"));
+			funcs.Add("toString", GetFunc("_ToString"));
+			funcs.Add("rset", GetFunc("RefSet"));
+			funcs.Add("lt", GetFunc("LessThan"));
+			funcs.Add("gt", GetFunc("GreaterThan"));
+            funcs.Add("eq", GetFunc("EqualTo"));
+            funcs.Add("scope", GetFunc("ReturnScope"));
+            funcs.Add("isset", GetFunc("IsPointerValid"));
+            funcs.Add("type", GetFunc("TypeOf"));
+
+			return funcs;
 		}
 		
 		static NetFunction GetFunc(string f)
@@ -44,27 +43,28 @@ namespace axScript3
 		#region Static Functions
 		
 		#region Maths
-		public static double Add(double a, params double[] Parameters)
-		{
-			for(int i = 0; i < Parameters.Length; i++)
-			{
-				a += Parameters[i];
-			}
-			
-			return a;
-		}
-		
-		public static double Subtract(double a, params double[] Parameters)
-		{
-			for(int i = 0; i < Parameters.Length; i++)
-			{
-				a -= Parameters[i];
-			}
-			
-			return a;
-		}
-		
-		public static double Multiply(double a, params double[] Parameters)
+        public static dynamic Add(dynamic a, params dynamic[] Parameters)
+        {
+            for (int i = 0; i < Parameters.Length; i++)
+            {
+                a += Parameters[i];
+            }
+
+            return a;
+        }
+
+
+        public static dynamic Subtract(dynamic a, params dynamic[] Parameters)
+        {
+            for (int i = 0; i < Parameters.Length; i++)
+            {
+                a -= Parameters[i];
+            }
+
+            return a;
+        }
+
+        public static double Multiply(dynamic a, params dynamic[] Parameters)
 		{
 			for(int i = 0; i < Parameters.Length; i++)
 			{
@@ -73,8 +73,8 @@ namespace axScript3
 			
 			return a;
 		}
-		
-		public static double Divide(double a, params double[] Parameters)
+
+        public static double Divide(dynamic a, params dynamic[] Parameters)
 		{
 			for(int i = 0; i < Parameters.Length; i++)
 			{
@@ -86,17 +86,17 @@ namespace axScript3
 		#endregion
 		
 		#region Logic
-		public static bool LessThan(double a, double b)
+        public static bool LessThan(dynamic a, dynamic b)
 		{
 			return a < b;	
 		}
-		
-		public static bool GreaterThan(double a, double b)
+
+        public static bool GreaterThan(dynamic a, dynamic b)
 		{
 			return a > b;	
 		}
-		
-		public static bool EqualTo(object a, object b)
+
+        public static bool EqualTo(dynamic a, dynamic b)
 		{
 			return a.Equals(b);	
 		}
@@ -139,6 +139,11 @@ namespace axScript3
                     return null;
             }
 
+        }
+
+        public static Type TypeOf(object o)
+        {
+            return o.GetType();
         }
 
         public static bool IsPointerValid(AxVariablePtr ptr)
@@ -188,12 +193,17 @@ namespace axScript3
 		#endregion
 		
 		#region Conversion
-		public static double StrToNum(string num)
+        public static int ToInt(dynamic inp)
+        {
+            return Convert.ToInt32(inp);
+        }
+
+		public static double ToDouble(dynamic inp)
 		{
-			return double.Parse(num);
+		    return Convert.ToDouble(inp);
 		}
 		
-		public static string _ToString(object inp)
+		public static string _ToString(dynamic inp)
 		{
 			return inp.AdvToString();	
 		}

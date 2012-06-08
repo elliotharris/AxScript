@@ -1,28 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using axScript3;
-using System.IO;
 
 namespace IO
 {
-    public class Module : AxSharpModule
+    public class IOStuff
     {
-        public void Load(AxInterpreter instance)
-        {
-            instance.RegisterFunction("read", GetFunc("ReadIn"));
-            instance.RegisterFunction("readkey", GetFunc("ReadKey"));
-            instance.RegisterFunction("print+", GetFunc("_Print"));
-            instance.RegisterFunction("print", GetFunc("PrintLine"));
-            instance.RegisterFunction("mprint", GetFunc("Print"));
-        }
-
-        static NetFunction GetFunc(string f)
-        {
-            return new NetFunction(typeof(Module).GetMethod(f));
-        }
-
+        [ExportAsAxFunction("print")]
         public static void PrintLine(object Format, params object[] Parameters)
         {
             if (Format.GetType() == typeof(String))
@@ -31,18 +14,21 @@ namespace IO
                 Console.WriteLine(Format);
         }
 
+        [ExportAsAxFunction("readkey")]
         public static double ReadKey(bool hide = false)
         {
             var c = Console.ReadKey(hide).KeyChar;
             return c;
         }
 
+        [ExportAsAxFunction("read")]
         public static string ReadIn(string Prompt = "")
         {
             Console.Write(Prompt);
             return Console.ReadLine();
         }
 
+        [ExportAsAxFunction("_print")]
         public static void Print(object Format, params object[] Parameters)
         {
             if (Format.GetType() == typeof(String))
@@ -51,6 +37,7 @@ namespace IO
                 Console.Write(Format);
         }
 
+        [ExportAsAxFunction("print+")]
         public static void _Print(object Var)
         {
             Console.WriteLine("{0}", Var.AdvToString());

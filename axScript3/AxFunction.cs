@@ -95,7 +95,7 @@ namespace axScript3
 				if(done) break;
 				
 				i += inner.Item2 + offset;
-				caller.callFuncFromString(inner.Item1, Params);
+				caller.CallFuncFromString(inner.Item1, Params);
 			}
 
             if (Params.ContainsKey("return"))

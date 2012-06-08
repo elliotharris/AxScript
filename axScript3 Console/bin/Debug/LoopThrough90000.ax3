@@ -11,7 +11,7 @@
 		 
 		(set ^valid false)
 		(set ^go false)
-		(while %{(eq valid false)} 
+		(while %{eq valid false} 
 		{
 			(set ^response (read "Do you wish to continue? [y/n]\n"))
 			(ifelse (eq response "y")
@@ -56,7 +56,7 @@
 ~(waitForEnter: msg newl | 
 	(if newl {(print "")}) 
 	(print msg)
-	(do %{(not (eq key 13))} 
+	(do %{not (eq key 13)} 
 	{
 		(set ^key (readkey true))
 	}

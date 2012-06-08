@@ -11,6 +11,11 @@ namespace axScript3
 		{
 			Console.WriteLine (a.AdvToString());
 		}
+
+        public static int ToInt(this double d)
+        {
+            return Convert.ToInt32(d);
+        }
 		
 		public static String AdvToString<T>(this T a)
 		{

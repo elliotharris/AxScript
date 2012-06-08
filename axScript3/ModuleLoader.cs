@@ -11,12 +11,25 @@ namespace axScript3
     {
         internal static void Load(AxInterpreter i, string p)
         {
-            String fp = Path.GetFullPath(p.Substring(1,p.Length-2));
-            Assembly a = Assembly.LoadFile(fp);
-            foreach (var t in a.GetTypes())
+            if (!i.Modules.Contains(p))
             {
-                if (!typeof(AxSharpModule).IsAssignableFrom(t)) continue;
-                ((AxSharpModule)Activator.CreateInstance(t)).Load(i);
+                i.Modules.Add(p);
+                String fp = Path.GetFullPath(p.Substring(1, p.Length - 2));
+                Assembly a = Assembly.LoadFile(fp);
+                foreach (var t in a.GetTypes())
+                {
+                    foreach (var m in t.GetMethods())
+                    {
+                        foreach (var attr in m.GetCustomAttributes(true))
+                        {
+                            var axFunctionMarker = attr as ExportAsAxFunction;
+                            if (axFunctionMarker != null)
+                            {
+                                i.RegisterFunction((axFunctionMarker).Name, new NetFunction(m));
+                            }
+                        }
+                    }
+                }
             }
         }
     }

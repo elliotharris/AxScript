@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -8,7 +8,7 @@
     <ProjectGuid>{80842320-BF8C-457A-AD07-E67FB2A752D3}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>axScript3Console</RootNamespace>
-    <AssemblyName>axScript3 Console</AssemblyName>
+    <AssemblyName>AXScript</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,10 +30,18 @@
     <Externalconsole>true</Externalconsole>
     <Commandlineparameters>"/Users/wrath_bringer2003/Documents/Scripts/TestScript.ls"</Commandlineparameters>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\mainicon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommandLine">
+      <HintPath>..\..\..\..\CommandLine\src\libcmdline\bin\Release\CommandLine.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleOptions.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
@@ -44,4 +52,14 @@
       <Name>axScript3</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fileicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Resources\mainicon.ico" />
+  </ItemGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -8,7 +8,7 @@ namespace Sockets
 {
     public class SocketStuff
     {
-        [ExportAsAxFunction("tcp_socket")]
+        [ExportAx("tcp_socket", "Creates and returns a new TCP Socket")]
         public static AxTCPSocket CreateSocket(String IP, double Port)
         {
             return new AxTCPSocket(IP, (int)Port);

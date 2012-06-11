@@ -22,11 +22,47 @@ namespace axScript3
                     {
                         foreach (var attr in m.GetCustomAttributes(true))
                         {
-                            var axFunctionMarker = attr as ExportAsAxFunction;
-                            if (axFunctionMarker != null)
+                            var axFunctionMarker = attr as ExportAx;
+                            if (axFunctionMarker == null) continue;
+                            if (i.Debug)
                             {
-                                i.RegisterFunction((axFunctionMarker).Name, new NetFunction(m));
+                                Console.Write("Importing Function: '{0}'", axFunctionMarker.Name);
+                                Console.CursorLeft = 50;
+                                Console.WriteLine(axFunctionMarker.Description);
                             }
+                            i.RegisterFunction(axFunctionMarker.Name, new NetFunction(m));
+                        }
+                    }
+
+                    foreach (var prop in t.GetProperties())
+                    {
+                        foreach (var attr in prop.GetCustomAttributes(true))
+                        {
+                            var axFunctionMarker = attr as ExportAx;
+                            if (axFunctionMarker == null) continue;
+                            if (i.Debug)
+                            {
+                                Console.Write("Importing Property [ReadOnly]: '{0}'", axFunctionMarker.Name);
+                                Console.CursorLeft = 50;
+                                Console.WriteLine(axFunctionMarker.Description);
+                            }
+                            i.RegisterFunction(axFunctionMarker.Name, new NetFunction(prop.GetGetMethod()));
+                        }
+                    }
+
+                    foreach (var field in t.GetFields())
+                    {
+                        foreach (var attr in field.GetCustomAttributes(true))
+                        {
+                            var axFunctionMarker = attr as ExportAx;
+                            if (axFunctionMarker == null) continue;
+                            if (i.Debug)
+                            {
+                                Console.Write("Importing Field: '{0}'", axFunctionMarker.Name);
+                                Console.CursorLeft = 50;
+                                Console.WriteLine(axFunctionMarker.Description);
+                            }
+                            i.Variables.Add(axFunctionMarker.Name, field.GetValue(null));
                         }
                     }
                 }

@@ -36,7 +36,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AxException.cs" />
-    <Compile Include="AxFuncAttribute.cs" />
+    <Compile Include="ExportAx.cs" />
     <Compile Include="AxInterpreter.cs" />
     <Compile Include="AxFunction.cs" />
     <Compile Include="AxSharpFunctions.cs" />

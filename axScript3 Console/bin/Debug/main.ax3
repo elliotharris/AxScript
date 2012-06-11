@@ -1,16 +1,24 @@
-// AxScript 3
+// (c) Blam 2012
 
-#module "Ax/IO.dll"
+#module "Ax\IO.dll"
 
 ~(main: args |
 	(
-		~[EntryPoint]
+		~[EntryPoint] 
 		
-		(set ^c 0xFF00FF)
-		(print (type c))
-		(print c)
+		(printl __IOVERSION)
 		
-		(read "Enter to exit")
+		(waitForEnter "Press enter to exit!" true)
+	)
+)
+
+~(waitForEnter: msg newl | 
+	(if newl {(printl "")}) 
+	(printl msg)
+	(do %{not (eq key 13)} 
+	{
+		(set ^key (readkey true))
+	}
 	)
 )
 

@@ -128,8 +128,8 @@ namespace axScript3
             var r = (IEnumerable)range;
             foreach(var v in r)
             {
-                var b = new Dictionary<string, object> { {func.Parameters[0], v } };
-                func.Call(this, b);	
+                Dictionary<string, object> b = func.ParamCount == 1 ? new Dictionary<string, object> {{func.Parameters[0], v}} : new Dictionary<string, object>();
+                func.Call(this, b);
             }
         }
                 
@@ -415,7 +415,7 @@ namespace axScript3
                     func = func.Substring(paramindex + 1);
                 }
 
-                parameters.Add(new AxFunction(_parameters, String.Format("(return {0})", func), true));
+                parameters.Add(new AxFunction(_parameters, String.Format("(return ({0}))", func), true));
                 end = start + extr.Item2 + 1;
             }
             else if (funcString[start] == '[') // Range

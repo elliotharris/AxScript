@@ -10,10 +10,10 @@ namespace axScript3
         public string VariableName;
         public AxInterpreter.VariableType Type;
 
-        public AxVariablePtr(string Variable, AxInterpreter.VariableType varType)
+        public AxVariablePtr(string variable, AxInterpreter.VariableType varType)
         {
-            this.VariableName = Variable;
-            this.Type = varType;
+            VariableName = variable;
+            Type = varType;
         }
 
         public override string ToString()

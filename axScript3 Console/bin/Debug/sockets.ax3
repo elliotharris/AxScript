@@ -1,0 +1,31 @@
+// (c) Blam 2012
+//
+// AxScript
+
+#module "Ax\Sockets.dll"
+#module "Ax\IO.dll"
+
+~(main: args |
+	(
+		~[EntryPoint] 
+		
+		(set ^a 100)
+		(print "Connecting!")
+		(set ^tcp (tcp_socket "127.0.0.1" 9000))
+		
+		(while %{tcp.Client.Connected} 
+		{
+			(if (tcp.Client.DataAvailable) 
+			{
+				(print (tcp.Reader:ReadLine))
+			})
+		}
+		)
+		(tcp:WriteLine "\\x{0} Testing: {0}" a 3)
+		(tcp:Flush)
+		(tcp.Client:Close)
+		(print "Done!")
+		
+		(read)
+	)
+)

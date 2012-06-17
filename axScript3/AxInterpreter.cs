@@ -15,7 +15,12 @@ namespace axScript3
         public String Script;
         public Dictionary<String, AxFunction> Functions       = new Dictionary<String, AxFunction>();
         public Dictionary<String, NetFunction> SharpFunctions = new Dictionary<String, NetFunction>();
-        public Dictionary<String, object> Variables           = new Dictionary<String, object>();
+        public Dictionary<String, object> Variables           = new Dictionary<String, object>
+                                                                  {
+                                                                      {"null", null},
+                                                                      {"true", true},
+                                                                      {"false", false}
+                                                                  };
         public Dictionary<String, Tuple<string, int>> Labels  = new Dictionary<String, Tuple<string, int>>();
         public List<String> CallStack = new List<String>();
         public delegate string SharpFunction(string[] parameters);
@@ -481,23 +486,23 @@ namespace axScript3
 
                 parameters.Add(varptr);
             }
-            else if (start + 4 <= funcString.Length && funcString.Substring(start, 4) == "true") //true keyword
-            {
-                end = funcString.IndexOf(" ", start);
-                if (end == -1) end = funcString.Length;
+            //else if (start + 4 <= funcString.Length && funcString.Substring(start, 4) == "true") //true keyword
+            //{
+            //    end = funcString.IndexOf(" ", start);
+            //    if (end == -1) end = funcString.Length;
 
-                string _par = funcString.Substring(start, end - start);
+            //    string _par = funcString.Substring(start, end - start);
 
-                if (_par == "true")
-                    parameters.Add(true);
-            }
-            else if (start + 5 <= funcString.Length && funcString.Substring(start, 5) == "false") // false keyword
-            {
-                end = funcString.IndexOf(" ", start);
-                if (end == -1) end = funcString.Length;
-                if (funcString.Substring(start, end - start) == "false")
-                    parameters.Add(false);
-            }
+            //    if (_par == "true")
+            //        parameters.Add(true);
+            //}
+            //else if (start + 5 <= funcString.Length && funcString.Substring(start, 5) == "false") // false keyword
+            //{
+            //    end = funcString.IndexOf(" ", start);
+            //    if (end == -1) end = funcString.Length;
+            //    if (funcString.Substring(start, end - start) == "false")
+            //        parameters.Add(false);
+            //}
             else if (funcString[start] == '@') // iterator
             {
                 start++;
@@ -566,7 +571,7 @@ namespace axScript3
 
             while (locindex < end)
             {
-                char c = funcString[locindex];
+                var c = funcString[locindex];
                 if (c == '[')
                 {
                     int locIndexEnd = funcString.IndexOf("]", locindex + 1, end - locindex - 1);
@@ -595,8 +600,7 @@ namespace axScript3
                     string indexerStr = funcString.Substring(locindex + 1, locIndexEnd - locindex - 1);
                     Type t = Var.GetType();
 
-                    dynamic prop = t.GetField(indexerStr);
-                    if (prop == null) prop = t.GetProperty(indexerStr);
+                    dynamic prop = t.GetField(indexerStr) ?? (dynamic) t.GetProperty(indexerStr);
 
                     Var = prop.GetValue(Var);
                     locindex = locIndexEnd;

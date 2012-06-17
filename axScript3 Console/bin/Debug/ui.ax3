@@ -1,0 +1,16 @@
+// (c) Blam 2012
+//
+// AxScript
+
+#module "Ax\UI.dll"
+
+~(main: args |
+	(
+		~[EntryPoint] 
+		
+		(set ^frmMain (form))
+		(set ^btnTest (button "Hello World" 5 5 200 100))
+		(form_add frmMain btnTest)
+		(frmMain:ShowDialog)
+	)
+)

@@ -1,0 +1,34 @@
+//Some testing stuff
+
+#module "Ax/IO.dll"
+
+~(average: arr |
+	(
+		(set ^r 0)
+		(for @arr { a | (set ^r (add r a))})
+		(set ^r (div r arr.Count))
+		(return r)
+	)
+)
+
+~(average_all: ... |
+	(
+		(average params)
+	)
+)
+
+~(main: args |
+	(
+		~[EntryPoint]
+		
+		(set ^arr (array))
+		
+		(for [-100..-200|5] { i |
+			(insert arr i)
+		})
+		
+		(set ^result (average arr))
+		(print "Result: {0}" result)
+	)
+)
+

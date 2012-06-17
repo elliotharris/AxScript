@@ -1,0 +1,25 @@
+//Some testing stuff
+
+#module "Ax/STD.dll"
+#module "Ax/IO.dll"
+
+~(readAllLines: fileName |
+	(set ^handle (fileopen fileName "r"))
+	(set ^tmp (array))
+	(do {
+		(set ^line (handle.readline))
+		(insert tmp line)
+	} %{(neq line null)})
+	(handle.close)
+	
+	(return tmp)
+)
+
+~(main: args |
+	(
+		~[EntryPoint]
+
+		(readAllLines args[0])
+	)
+)
+

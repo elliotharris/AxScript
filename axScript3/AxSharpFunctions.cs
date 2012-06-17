@@ -23,6 +23,7 @@ namespace axScript3
 			funcs.Add("lt", GetFunc("LessThan"));
 			funcs.Add("gt", GetFunc("GreaterThan"));
             funcs.Add("eq", GetFunc("EqualTo"));
+            funcs.Add("neq", GetFunc("NotEqualTo"));
             funcs.Add("scope", GetFunc("ReturnScope"));
             funcs.Add("isset", GetFunc("IsPointerValid"));
             funcs.Add("type", GetFunc("TypeOf"));
@@ -95,6 +96,11 @@ namespace axScript3
 		{
 			return a.Equals(b);	
 		}
+
+        public static bool NotEqualTo(dynamic a, dynamic b)
+        {
+            return a != b;
+        }
 		
 		public static int Compare<T>(T a, T b) where T : IComparable
 		{

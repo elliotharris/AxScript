@@ -7,11 +7,12 @@
 ~(readAllLines: fileName |
 	(set ^handle (fileopen fileName "r"))
 	(set ^tmp (array))
-	(do {
-		(set ^line (handle.readline))
+	(set ^line (handle:readline))
+	(while %{neq line null} {
 		(insert tmp line)
-	} %{(neq line null)})
-	(handle.close)
+		(set ^line (handle:readline))
+	})
+	(handle:close)
 	
 	(return tmp)
 )
@@ -20,9 +21,13 @@
 	(
 		~[EntryPoint]
 
-		(set ^lines (readAllLines (read "Please enter a file to read")))
+		(set ^lines (readAllLines (read "Please enter a file to read: ")))
 		
-		(printarr lines)
+		(for @lines { line |
+			(printl line)
+		})
+		
+		(read)
 	)
 )
 

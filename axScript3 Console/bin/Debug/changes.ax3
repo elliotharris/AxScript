@@ -1,0 +1,29 @@
+// Return Sytax
+// Current:
+(lset ^return x)
+// Next implementation:
+(return x)
+
+// Action Syntax
+// Sugar for functions, make loop conditionals cleaner, etc
+%{x}
+
+// Equivalent to:
+{(return x)}
+
+// More Examples
+	
+	(while {(return (not (eq i 10))}
+		{
+			(set i (add i 1))
+		}
+	)
+	// Changes to
+	(while %{not (eq i 10)}
+		{
+			(set i (add i 1))
+		}
+	)
+	
+	
+	

@@ -43,10 +43,14 @@ namespace STD
         [ExportAx("printl", "Prints a line of text.")]
         public static void PrintLine(object format, params object[] parameters)
         {
-            if (format is string)
-                Console.WriteLine((string)format, parameters);
-            else
+            if (parameters.Length == 0)
+            {
                 Console.WriteLine(format);
+            }
+            else
+            {
+                Console.WriteLine((string)format, parameters);                
+            }
         }
 
         [ExportAx("readkey", "Reads in a single keypress")]

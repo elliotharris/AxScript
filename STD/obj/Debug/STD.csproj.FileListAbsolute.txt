@@ -1,0 +1,5 @@
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3 Console\bin\Debug\Ax\STD.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3 Console\bin\Debug\Ax\STD.pdb
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\STD\obj\Debug\STD.csprojResolveAssemblyReference.cache
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\STD\obj\Debug\STD.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\STD\obj\Debug\STD.pdb

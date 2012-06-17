@@ -1,0 +1,8 @@
+<Modules>
+  <Module PersistentId="E58DED6F-CF4C-4D74-9027-C530E8C4C3CC" ModuleId="UI" />
+  <Module PersistentId="33068CFB-AEF5-43E7-97B0-E89A96313A30" ModuleId="axScript3" />
+  <Module PersistentId="A687F1A2-7D64-4229-8A14-8C377B18FE0A" ModuleId="Sockets" />
+  <Module PersistentId="E29E1906-0F5B-46A0-B0CF-097423EACD44" ModuleId="IO" />
+  <Module PersistentId="80842320-BF8C-457A-AD07-E67FB2A752D3" ModuleId="axScript3 Console" />
+  <Module PersistentId="5AFDC534-196C-4BC6-8600-DD2D56640897" ModuleId="STD" />
+</Modules>

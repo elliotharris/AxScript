@@ -1,0 +1,18 @@
+// AxScript 3
+// Hex Literal Example
+
+#module "Ax/IO.dll"
+
+~(main: args |
+	(
+		~[EntryPoint]
+		
+		(set ^c 0xFF00FF)
+		(set ^c (sub c 0x2CB4AA))
+		(print (type c))
+		(print "0x{0:X6}" c)
+		
+		(read "Enter to exit")
+	)
+)
+

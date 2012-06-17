@@ -19,12 +19,7 @@ namespace axScript3
             funcs.Add("not", GetFunc("Not"));
 			funcs.Add("double", GetFunc("ToDouble"));
             funcs.Add("int", GetFunc("ToInt"));
-			funcs.Add("length", GetFunc("ArrayCount"));
-			funcs.Add("insert", GetFunc("ArrayInsert"));
-			funcs.Add("remove", GetFunc("ArrayRemove"));
-			funcs.Add("removeAt", GetFunc("ArrayRemoveAt"));
 			funcs.Add("toString", GetFunc("_ToString"));
-			funcs.Add("rset", GetFunc("RefSet"));
 			funcs.Add("lt", GetFunc("LessThan"));
 			funcs.Add("gt", GetFunc("GreaterThan"));
             funcs.Add("eq", GetFunc("EqualTo"));
@@ -184,11 +179,6 @@ namespace axScript3
 			{
 				Array.RemoveAt(Convert.ToInt32(i));	
 			}
-		}
-		
-		public static void RefSet(out object input, object Value)
-		{
-			input = Value;
 		}
 		#endregion
 		

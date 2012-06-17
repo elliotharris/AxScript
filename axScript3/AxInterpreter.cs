@@ -118,7 +118,7 @@ namespace axScript3
             while((bool)cond.Call(this, null)) Do.Call(this, null);	
         }
 
-        public void Do(AxFunction cond, AxFunction Do)
+        public void Do(AxFunction Do, AxFunction cond)
         {
             do { Do.Call(this, null); } while ((bool)cond.Call(this, null));
         }

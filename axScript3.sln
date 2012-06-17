@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sockets", "Sockets\Sockets.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "UI\UI.csproj", "{E58DED6F-CF4C-4D74-9027-C530E8C4C3CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STD", "STD\STD.csproj", "{5AFDC534-196C-4BC6-8600-DD2D56640897}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{E58DED6F-CF4C-4D74-9027-C530E8C4C3CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E58DED6F-CF4C-4D74-9027-C530E8C4C3CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E58DED6F-CF4C-4D74-9027-C530E8C4C3CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AFDC534-196C-4BC6-8600-DD2D56640897}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AFDC534-196C-4BC6-8600-DD2D56640897}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AFDC534-196C-4BC6-8600-DD2D56640897}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AFDC534-196C-4BC6-8600-DD2D56640897}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

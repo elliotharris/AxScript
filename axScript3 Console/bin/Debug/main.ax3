@@ -1,24 +1,28 @@
-// (c) Blam 2012
+//Some testing stuff
 
-#module "Ax\IO.dll"
+#module "Ax/STD.dll"
+#module "Ax/IO.dll"
+
+// Reads all lines into an array.
+~(readAllLines: fileName |
+	(set ^handle (fileopen fileName "r"))
+	(set ^tmp (array))
+	(do {
+		(set ^line (handle.readline))
+		(insert tmp line)
+	} %{(neq line null)})
+	(handle.close)
+	
+	(return tmp)
+)
 
 ~(main: args |
 	(
-		~[EntryPoint] 
-		
-		(printl __IOVERSION)
-		
-		(waitForEnter "Press enter to exit!" true)
-	)
-)
+		~[EntryPoint]
 
-~(waitForEnter: msg newl | 
-	(if newl {(printl "")}) 
-	(printl msg)
-	(do %{not (eq key 13)} 
-	{
-		(set ^key (readkey true))
-	}
+		(set ^lines (readAllLines (read "Please enter a file to read")))
+		
+		(printarr lines)
 	)
 )
 

@@ -39,6 +39,9 @@ Easily add in functions.
             biz++;
 		}
 	}
+	
+Then in AxScript they can be accessed by doing a '#module' compiler statement that imports that module.
+Modules are just .NET DLLs with Attributes marking classes, methods, properties, fields, etc.
 
     // AxScript
 

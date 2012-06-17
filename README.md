@@ -53,7 +53,7 @@ Modules are just .NET DLLs with Attributes marking classes, methods, properties,
             (foo:Test 10)               //Foo.Test(10);
             (BarTest 10)                //Bar.Test(10);
             (printl foo.biz)            //Console.WriteLine(Foo.biz);
-            (printl Bar)            //Console.WriteLine(Bar.bang);
+            (printl Bar)            	//Console.WriteLine(Bar.bang);
         )
     )
 	

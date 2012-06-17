@@ -1,6 +1,7 @@
 *.exe*
 *.dll
 *.pdb
+_ReSharper.axScript3*
 
 # mstest test results
 TestResults

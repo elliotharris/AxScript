@@ -7,35 +7,52 @@ It is a work in progress, but currently supports quite a few key features:
 
 ### Working C# bindings.
 
-Easily add in static
+Easily add in functions.
 
-	// C#
+	// C# --> Compiles to Test.dll
 	public static class Bar
 	{
+        [AxExport("Bar", "Bang field in Bar class")]
+        public static int bang = 20;
+
+        [AxExport("BarTest", "Test function in Bar class")]
 		public static function Test(int a)
 		{
-			Console.WriteLine("Testing: {0}", a);
+			Console.WriteLine("Testing: {0}", a+bang);
+            bang++;
 		}
 	}
 	
+    [AxClass("Foo", "Class for doing stuff!")]
 	public class Foo
 	{
-		public int biz = 30;
-		
+		public int biz;
+
+        public Foo(int a)
+        {
+            biz = a;
+        }
+
 		public void Test(int inp)
 		{
-			biz = inp;
-			Console.WriteLine("Testing: {0}", biz);
+			Console.WriteLine("Testing: {0}", inp+biz);
+            biz++;
 		}
 	}
-	
-	AxInterpreter AxInt = new AxInterpreter();
-	Foo fooInstance = new Foo();
-	// Parameters: (string AxFuncName, string NetFuncName, Type OwnerClass)
-	AxInt.RegisterStaticFunction("test", "Test", Bar.getType());
-	
-	// Parameters: (string AxFuncName, NetFunction function)
-	AxInt.RegisterFunction("settest", new NetFunction(fooInstance.getType().getMethod("Test"), fooInstance));
+
+    // AxScript
+
+    #module "Test.dll"
+    ~(main: args |
+        (
+            ~[EntryPoint]
+            (set ^fooTest (Foo 20))     //Create new Foo
+            (foo:Test 10)               //Foo.Test(10);
+            (BarTest 10)                //Bar.Test(10);
+            (printl foo.biz)            //Console.WriteLine(Foo.biz);
+            (printl Bar)            //Console.WriteLine(Bar.bang);
+        )
+    )
 	
 ### Dynamic variables
 
@@ -48,7 +65,7 @@ Easily add in static
 ### Function declarations
 
 	// AxScript
-	~(test: a | (print "Test: " a))
+	~(test: a | (printl "Test: " a))
 	~(main: args |
 		(
 			~[EntryPoint]
@@ -61,23 +78,23 @@ Easily add in static
 
 	// AxScript
 	(set ^var 20)
-	(print var) //global
+	(printl var) //global
 	(lset ^var 20)
-	(print var) //local overrides global lookup
-	(print $var) //force global lookup
+	(printl var) //local overrides global lookup
+	(printl $var) //force global lookup
 	(lset ^var2 200)
-	(print $var2) //throws error, no global named "var2"
+	(printl $var2) //throws error, no global named "var2"
 	
 ### Dynamic parameter sizes
 
 	// AxScript
-	(print "a" "b" "c")
-	(print "a")
+	(printl "{0}, {1}, {2}" "a" "b" "c")
+	(printl "a")
 	(set ^array 1 2 3 4 5 6)
-	(print "Second element: " array[2]) //prints "Second Element: 3"
+	(printl "Second element: {0}" array[2]) //prints "Second Element: 3"
 	
 	//print out all args put in.
-	~(test: a ... | (print a) (for @args { arg | (print arg) }))
+	~(test: a ... | (printl a) (for @args { arg | (printl arg) }))
 	
 ### Easy array creation and manipulation
 
@@ -86,25 +103,25 @@ Easily add in static
 	(insert array 4 5 6)
 	(set ^innerArray 7 8 9)
 	(set ^array array innerArray 10 11 12 13)
-	(print+ array) //recursively prints all elements.
-	(print (length array))
+	(printarr array) //recursively prints all elements.
+	(printl (length array))
 	(removeAt array 2)
-	(print+ array)
-	(print (length array))
+	(printarr array)
+	(printl (length array))
 	
 ### Loops and enumerations
 
 	// AxScript
 	(set ^enum [0, 10, 20, 30])
 	(set ^enum2 [0..31 | 3])
-	(print+ enum)
-	(print+ enum2)
+	(printarr enum)
+	(printarr enum2)
 	(set ^total 0)
 	(for enum2 { i |
-		(print i)
-		(add total i)
+		(printl i)
+		(set ^total (add total i))
 	})
-	(print "Total: " total)
+	(printl "Total: " total)
 	
 ### Function Pointers
 	
@@ -117,5 +134,5 @@ Easily add in static
 		
 		(set ^total 0)
 		(for [0..10] *sum_function)
-		(print total)
+		(printl total)
 	)

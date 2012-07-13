@@ -1,0 +1,6 @@
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Exit\bin\Release\Exit.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Exit\bin\Release\Exit.pdb
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Exit\bin\Release\axScript3.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Exit\obj\Release\Exit.csprojResolveAssemblyReference.cache
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Exit\obj\Release\Exit.dll
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\Exit\obj\Release\Exit.pdb

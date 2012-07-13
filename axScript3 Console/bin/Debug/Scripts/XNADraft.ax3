@@ -1,0 +1,45 @@
+// Script for basic game.
+
+#module "Ax/STD.dll"
+#module "AxXNA.dll" 
+
+~(main: args |
+	(
+		~[EntryPoint]
+		(set ^mouseX 0)
+		(set ^mouseY 0)
+		(set ^originX 0)
+		(set ^originY 0)
+	)
+)
+
+~(init: game screenHandler |
+	(
+		~[xInit]
+		(screenHandler:Resize 1920 1080)
+		(game:ShowMouse)
+	)
+)
+
+~(update: gameTime |
+	(
+		~[xUpdate]
+		(set ^originX (add originX 1))
+	)
+)
+
+~(mouse_move: x y |
+	(
+		~[xMouseMove]
+		(set ^mouseX x)
+		(set ^mouseY y)
+	)
+)
+
+~(draw: graphics |
+	(
+		~[xDraw]
+		(graphics:Color 255 0 0)
+		(graphics:Line originX originY mouseX mouseY)
+	)
+)

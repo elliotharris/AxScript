@@ -60,7 +60,7 @@ namespace axScript3
             return a;
         }
 
-        public static double Multiply(dynamic a, params dynamic[] Parameters)
+        public static dynamic Multiply(dynamic a, params dynamic[] Parameters)
 		{
 			for(int i = 0; i < Parameters.Length; i++)
 			{
@@ -70,7 +70,7 @@ namespace axScript3
 			return a;
 		}
 
-        public static double Divide(dynamic a, params dynamic[] Parameters)
+        public static dynamic Divide(dynamic a, params dynamic[] Parameters)
 		{
 			for(int i = 0; i < Parameters.Length; i++)
 			{
@@ -94,7 +94,7 @@ namespace axScript3
 
         public static bool EqualTo(dynamic a, dynamic b)
 		{
-			return a.Equals(b);	
+			return a == b;	
 		}
 
         public static bool NotEqualTo(dynamic a, dynamic b)

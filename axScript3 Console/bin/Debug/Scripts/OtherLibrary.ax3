@@ -1,0 +1,8 @@
+#module <Ax/STD>
+
+~(wait: message |
+	(
+		(print message)
+		(read)
+	)
+)

@@ -15,7 +15,7 @@ namespace axScript3
 		// gets ~[ ] declarations.
 		public void GetDynamicTags()
 		{
-			for(int i = InnerFunction.Length -1; i > 0; i--)
+			for(var i = InnerFunction.Length -1; i > 0; i--)
 			{
 				if(InnerFunction[i] == '[' && InnerFunction[i-1] == '~')
 				{
@@ -25,7 +25,7 @@ namespace axScript3
 					//Console.WriteLine (Tag);
 					InnerFunction = InnerFunction.Remove(i-1,Length+2);
 					
-					List<String> Keys = new List<String>();
+					var Keys = new List<String>();
 					Keys.AddRange(Tags.Keys);
 					foreach(string a in Keys)
 					{
@@ -73,6 +73,12 @@ namespace axScript3
 			return a.ToString();
 		}
 		
+        public T Call<T>(AxInterpreter caller, Dictionary<String, object> Params)
+        {
+            var r = Call(caller, Params);
+            return (T)r;
+        }
+
 		public object Call(AxInterpreter caller, Dictionary<String, object> Params)
 		{
 			if(Params == null)
@@ -98,8 +104,8 @@ namespace axScript3
 				caller.CallFuncFromString(inner.Item1, Params);
 			}
 
-            if (Params.ContainsKey("return"))
-                return Params["return"];
+            if (Params.ContainsKey(caller.Prefix + "return"))
+                return Params[caller.Prefix + "return"];
             else return null;
 		}
 	}

@@ -11,10 +11,10 @@ namespace axScript3Console
 		public static void Main (string[] args)
 		{
 			AxInterpreter ax = null;
-			try
-			{
+			//try
+			//{
 				Console.WriteLine("AxScript 3 Console");
-				Console.WriteLine("^^^^^^^^ ^ ^^^^^^^");
+				Console.WriteLine("^^^^^^^^ ^ ^^^^^^^");                   
 
 				var consoleOptions = new ConsoleOptions();
 				var parser = new CommandLineParser();
@@ -26,7 +26,7 @@ namespace axScript3Console
 				//Console.WriteLine(consoleOptions.Script);
 
 				var script = File.ReadAllText(consoleOptions.Script);
-
+		        var dir = Path.GetDirectoryName(consoleOptions.Script);
                 ax = new AxInterpreter(consoleOptions.Debug);
                 if (consoleOptions.Timing)
                 {
@@ -35,9 +35,8 @@ namespace axScript3Console
                     while (times > 0)
                     {
                         var s = Stopwatch.StartNew();
-                        ax.Run(script);
+                        ax.Run(script, dir);
                         s.Stop();
-                        ax.Clear();
                         Console.ForegroundColor = ConsoleColor.Magenta;
                         Console.WriteLine("Elapsed MS: {0}", s.ElapsedMilliseconds);
                         Console.ForegroundColor = ConsoleColor.White;
@@ -52,18 +51,18 @@ namespace axScript3Console
                 else
                 {
                     ax = new AxInterpreter(consoleOptions.Debug);
-                    ax.Run(script);
+                    ax.Run(script, dir);
                 }
-			}
-			catch (Exception ex)
-			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("\n\n\nERROR RUNNING SCRIPT:\n\t{0}", ex.Message);
-				Console.Write("Call History:\n\t");
-				if(ax != null) ax.CallStack.ForEach(x => Console.Write("{0}, ", x));
-				Console.WriteLine("[error]");
-				Console.ReadLine();
-			}
+			//}
+			//catch (Exception ex)
+			//{
+			//	Console.ForegroundColor = ConsoleColor.Red;
+			//	Console.WriteLine("\n\n\nERROR RUNNING SCRIPT:\n\t{0}", ex.Message);
+			//	Console.Write("Call History:\n\t");
+			//	if(ax != null) ax.CallStack.ForEach(x => Console.Write("{0}, ", x));
+			//	Console.WriteLine("[error]");
+			//	Console.ReadLine();
+			//}
 		}
 	}
 }

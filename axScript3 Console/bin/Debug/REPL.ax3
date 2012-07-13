@@ -1,0 +1,43 @@
+//REPL Script 1.0
+
+#module <Ax/STD.dll>
+#module <Ax/Exit.dll>
+
+~(exit: type error |
+	(
+		~[ExitPoint]
+		(set ^err error)
+		(if (eq type EXITCODE_ERROR) {
+			(printl "# Error.\n\n")
+		})
+		
+		(return false)
+	)
+)
+
+~(main: args |
+	(
+		~[EntryPoint]
+		(REPLloop)
+	)
+)
+
+~(REPLloop: 
+	(	
+		(set ^quit false)
+		
+		(do {
+			(print "> ")
+			(set ^inp (read))
+			(ifelse (eq inp.Length 0) {
+				(set ^quit true)
+			} {
+				(ifelse (eq inp "REPLloop") {
+					(printl "Yo dawg")
+				} {
+					(printl "{0}" (run inp))
+				})
+			})
+		} %{eq quit false})
+	)
+)

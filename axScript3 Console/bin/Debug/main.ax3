@@ -1,33 +1,19 @@
-//Some testing stuff
-
-#module "Ax/STD.dll"
-#module "Ax/IO.dll"
-
-// Reads all lines into an array.
-~(readAllLines: fileName |
-	(set ^handle (fileopen fileName "r"))
-	(set ^tmp (array))
-	(set ^line (handle:readline))
-	(while %{neq line null} {
-		(insert tmp line)
-		(set ^line (handle:readline))
-	})
-	(handle:close)
-	
-	(return tmp)
-)
+#module <Ax/STD>
 
 ~(main: args |
 	(
 		~[EntryPoint]
-
-		(set ^lines (readAllLines (read "Please enter a file to read: ")))
 		
-		(for @lines { line |
-			(printl line)
-		})
+		(print "Enter file to run: ")
+		(dofile (read))
 		
-		(read)
+		(end)
 	)
 )
 
+~(end:
+	(
+		(printl "\n\nFile finished! Press enter to exit.")
+		(read)
+	)
+)

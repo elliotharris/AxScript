@@ -1,0 +1,12 @@
+#include "OtherLibrary.ax3"
+
+~(average: nums |
+	(
+		(set ^av 0)
+		(for nums { i | (set ^av (add av i)) })
+		(set ^av (div av nums.Count))
+		(return av)
+	)
+)
+
+~(averageAll: ... | (return (average params)))

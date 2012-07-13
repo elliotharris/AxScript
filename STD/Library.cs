@@ -40,6 +40,12 @@ namespace STD
             }
         }
 
+        [ExportAx("clearconsole", "Clears the console")]
+        public static void ClearConsole()
+        {
+            Console.Clear();
+        }
+
         [ExportAx("printl", "Prints a line of text.")]
         public static void PrintLine(object format, params object[] parameters)
         {

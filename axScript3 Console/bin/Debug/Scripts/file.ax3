@@ -1,0 +1,25 @@
+#module <Ax/STD>
+#module <Ax/IO>
+
+~(readAllLines: fileName |
+	(set ^handle (fileopen fileName "r"))
+	(set ^tmp (array))
+	(do {
+		(set ^line (handle:readline))
+		(insert tmp line)
+	} %{neq line null})
+	(handle:close)
+	
+	(return tmp)
+)
+
+~(main: args |
+	(
+		~[EntryPoint]
+		(print "Enter file to read: ")
+		(for (readAllLines (read)) { line | (printl line) })
+		
+		(read)
+	)
+)
+

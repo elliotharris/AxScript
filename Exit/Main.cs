@@ -15,7 +15,7 @@ namespace Exit
         [HookAx("ExitPoint", "Similarly to EntryPoint, this label defines the function to call when code exits.")]
         public static void InitExitHandler(AxInterpreter ax, AxFunction func)
         {
-            ax.ScriptError += exception => func.Call<Boolean>(ax, new Dictionary<string, object>{ {"type", 1}, {"error", exception} });
+            ax.ScriptError += exception => func.Call<Boolean>(ax, new object[]{ 1, exception});
         }
     }
 }

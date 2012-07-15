@@ -93,5 +93,11 @@ namespace STD
         {
             Console.WriteLine("{0}", var.AdvToString());
         }
+
+        [ExportAx("consoletitle", "Sets title of the console window")]
+        public static void SetTitle(string title)
+        {
+            Console.Title = title;
+        }
     }
 }

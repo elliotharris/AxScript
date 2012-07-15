@@ -11,7 +11,8 @@ namespace axScript3
 		public string InnerFunction;
 		public bool FixedParams;
 		public Dictionary<String, Tuple<String, int>> Tags = new Dictionary<String, Tuple<String, int>>();
-		
+	    public string Prefix;
+
 		// gets ~[ ] declarations.
 		public void GetDynamicTags()
 		{
@@ -49,17 +50,18 @@ namespace axScript3
 			Console.WriteLine ();				
 		}
 		
-		public AxFunction (string[] Parameters, string Function, bool FixedParams = true)
+		public AxFunction (string[] parameters, string function, string prefix, bool fixedParams = true)
 		{
-			this.Parameters = Parameters;
-			this.InnerFunction = Function;
-			this.ParamCount = Parameters.Length;
-			this.FixedParams = FixedParams;
+			Parameters = parameters;
+			InnerFunction = function;
+			ParamCount = parameters.Length;
+			FixedParams = fixedParams;
+		    Prefix = prefix;
 		}
 		
 		public override string ToString ()
 		{
-			StringBuilder a = new StringBuilder("Func: ");
+			var a = new StringBuilder("Func: ");
 			a.Append(InnerFunction);
 			a.Append(" | Params: ");
 			foreach(var b in Parameters)
@@ -72,8 +74,19 @@ namespace axScript3
 			
 			return a.ToString();
 		}
-		
-        public T Call<T>(AxInterpreter caller, Dictionary<String, object> Params)
+
+        public T Call<T>(AxInterpreter caller, object[] Params)
+        {
+            var rps = new Dictionary<string, object>();
+            for (var i = 0; i < Parameters.Length; i++)
+            {
+                rps.Add(Parameters[i], Params[i]);
+            }
+
+            return Call<T>(caller, rps);
+        }
+
+	    public T Call<T>(AxInterpreter caller, Dictionary<String, object> Params)
         {
             var r = Call(caller, Params);
             return (T)r;

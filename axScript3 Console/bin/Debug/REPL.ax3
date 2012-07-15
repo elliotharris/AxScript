@@ -6,23 +6,39 @@
 ~(exit: type error |
 	(
 		~[ExitPoint]
+		
 		(set ^err error)
-		(if (eq type EXITCODE_ERROR) {
-			(printl "# Error.\n\n")
+		
+		(if (eq type #EXITCODE_ERROR) {
+			(set ^err (string err.InnerException))
+			(set ^pos (err:IndexOf "--->"))
+			(set ^pos (err:IndexOf "--->" (add pos 1)))
+			(set ^pos (err:IndexOf "--->" (add pos 1)))
+			(set ^endp (err:IndexOf "at" pos))
+			
+			(set ^err (err:Substring (add pos 5) (sub endp pos 10)))
+			
+			(if (eq err "System.Reflection.Target") {
+				(set ^err "Invalid parameter type")
+			})
+		
+			(printl "# {0}\n\n" err)
 		})
 		
-		(return false)
+		(return false) // Keep it running.
 	)
 )
 
 ~(main: args |
 	(
 		~[EntryPoint]
-		(REPLloop)
+		
+		(consoletitle "axScript REPL 1.0")
+		(loop)
 	)
 )
 
-~(REPLloop: 
+~(loop: 
 	(	
 		(set ^quit false)
 		
@@ -32,7 +48,7 @@
 			(ifelse (eq inp.Length 0) {
 				(set ^quit true)
 			} {
-				(ifelse (eq inp "REPLloop") {
+				(ifelse (eq inp "loop") {
 					(printl "Yo dawg")
 				} {
 					(printl "{0}" (run inp))

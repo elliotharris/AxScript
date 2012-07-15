@@ -14,12 +14,9 @@ namespace axScript3
 			funcs.Add("sub", GetFunc("Subtract"));
 			funcs.Add("div", GetFunc("Divide"));
 			funcs.Add("mult", GetFunc("Multiply"));
-			funcs.Add("and", GetFunc("And"));
-			funcs.Add("or", GetFunc("Or"));
-            funcs.Add("not", GetFunc("Not"));
 			funcs.Add("double", GetFunc("ToDouble"));
             funcs.Add("int", GetFunc("ToInt"));
-			funcs.Add("toString", GetFunc("_ToString"));
+			funcs.Add("string", GetFunc("_ToString"));
 			funcs.Add("lt", GetFunc("LessThan"));
 			funcs.Add("gt", GetFunc("GreaterThan"));
             funcs.Add("eq", GetFunc("EqualTo"));
@@ -106,23 +103,6 @@ namespace axScript3
 		{
 			return a.CompareTo(b);
 		}
-		
-		public static bool And(params bool[] Bools)
-		{
-			foreach(bool a in Bools) if(!a) return false;
-			return true;
-		}
-		
-		public static bool Or(params bool[] Bools)
-		{
-			foreach(bool a in Bools) if(a) return true;
-			return false;
-		}
-
-        public static bool Not(bool input)
-        {
-            return !input;
-        }
 		#endregion
 
         #region Pointers
@@ -201,7 +181,7 @@ namespace axScript3
 		
 		public static string _ToString(dynamic inp)
 		{
-			return inp.AdvToString();	
+			return inp.ToString();	
 		}
 		#endregion
 		

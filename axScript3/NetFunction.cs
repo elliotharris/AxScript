@@ -39,7 +39,7 @@ namespace axScript3
 				{
 					int lastParamPosition = Inputs.Length - 1;
 		
-					object[] realParams = new object[Inputs.Length];
+					var realParams = new object[Inputs.Length];
 					for (int i = 0; i < lastParamPosition; i++)
 						realParams[i] = input[i];
 		
@@ -57,8 +57,8 @@ namespace axScript3
 				if (input.Length < Inputs.Length)
 				{
 					var optInputs = from a in Inputs where a.IsOptional select a;
-					int i = Inputs.Length - input.Length;
-					List<object> inps = input.ToList();
+					var i = Inputs.Length - input.Length;
+					var inps = input.ToList();
 					foreach (var b in optInputs)
 					{
 						if (i > 0)

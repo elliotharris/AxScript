@@ -2,18 +2,16 @@
 
 ~(main: args |
 	(
-		~[EntryPoint]
-		
-		(print "Enter file to run: ")
-		(dofile (read))
-		
-		(end)
-	)
-)
-
-~(end:
-	(
-		(printl "\n\nFile finished! Press enter to exit.")
-		(read)
+		~[EntryPoint]	
+		(set ^exit false)
+		(do {
+			(print "Enter file to run: ")
+			(set ^file (read))
+			(ifelse (eq file.Length 0) {
+				(set ^exit true)
+			} {
+				(dofile file)
+			})
+		} %{eq exit false})
 	)
 )

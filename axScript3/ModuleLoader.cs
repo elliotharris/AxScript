@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.IO;
+using System.Reflection;
 
 namespace axScript3
 {
@@ -21,11 +18,11 @@ namespace axScript3
                 i.Modules.Add(p);
                 String fp = Path.GetFullPath(p);
                 Assembly a = Assembly.LoadFile(fp);
-                foreach (var t in a.GetTypes())
+                foreach (Type t in a.GetTypes())
                 {
-                    foreach (var m in t.GetMethods())
+                    foreach (MethodInfo m in t.GetMethods())
                     {
-                        foreach (var attr in m.GetCustomAttributes(true))
+                        foreach (object attr in m.GetCustomAttributes(true))
                         {
                             var axFunctionMarker = attr as ExportAx;
                             if (axFunctionMarker != null)
@@ -52,12 +49,15 @@ namespace axScript3
                         }
                     }
 
-                    foreach (var prop in t.GetProperties())
+                    foreach (PropertyInfo prop in t.GetProperties())
                     {
-                        foreach (var attr in prop.GetCustomAttributes(true))
+                        foreach (object attr in prop.GetCustomAttributes(true))
                         {
                             var axFunctionMarker = attr as ExportAx;
-                            if (axFunctionMarker == null) continue;
+                            if (axFunctionMarker == null)
+                            {
+                                continue;
+                            }
                             if (i.Debug)
                             {
                                 Console.Write("Importing Property [ReadOnly]: '{0}'", axFunctionMarker.Name);
@@ -68,12 +68,15 @@ namespace axScript3
                         }
                     }
 
-                    foreach (var field in t.GetFields())
+                    foreach (FieldInfo field in t.GetFields())
                     {
-                        foreach (var attr in field.GetCustomAttributes(true))
+                        foreach (object attr in field.GetCustomAttributes(true))
                         {
                             var axFunctionMarker = attr as ExportAx;
-                            if (axFunctionMarker == null) continue;
+                            if (axFunctionMarker == null)
+                            {
+                                continue;
+                            }
                             if (i.Debug)
                             {
                                 Console.Write("Importing Field: '{0}'", axFunctionMarker.Name);

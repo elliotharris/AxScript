@@ -2,8 +2,8 @@
 {
     public class AxVariablePtr
     {
-        public string VariableName;
         public AxInterpreter.VariableType Type;
+        public string VariableName;
 
         public AxVariablePtr(string variable, AxInterpreter.VariableType varType)
         {
@@ -13,7 +13,7 @@
 
         public override string ToString()
         {
-            return (string)this;
+            return this;
         }
 
         public static implicit operator string(AxVariablePtr ptr)

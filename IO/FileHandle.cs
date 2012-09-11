@@ -5,17 +5,21 @@ namespace IO
     // ReSharper disable InconsistentNaming
     public class FileHandle
     {
-        private readonly FileStream _underlying;
         private readonly StreamReader _reader;
+        private readonly FileStream _underlying;
         private readonly StreamWriter _writer;
 
         public FileHandle(FileStream fs)
         {
             _underlying = fs;
-            if(fs.CanRead)
+            if (fs.CanRead)
+            {
                 _reader = new StreamReader(fs);
-            if(fs.CanWrite)
+            }
+            if (fs.CanWrite)
+            {
                 _writer = new StreamWriter(fs);
+            }
         }
 
         public void close()
@@ -25,9 +29,12 @@ namespace IO
 
         public char read()
         {
-            var x = _reader.Read();
-            if (x == -1) return '\0';
-            return (char)x;
+            int x = _reader.Read();
+            if (x == -1)
+            {
+                return '\0';
+            }
+            return (char) x;
         }
 
         public string readline()
@@ -45,5 +52,6 @@ namespace IO
             _writer.WriteLine(f, pObjects);
         }
     }
+
     // ReSharper restore InconsistentNaming
 }

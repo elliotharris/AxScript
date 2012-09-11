@@ -7,21 +7,21 @@ namespace axScript3
     [Serializable]
     public class AxException : Exception
     {
-        public AxInterpreter Caller;
         public List<String> CallStack;
+        public AxInterpreter Caller;
 
         public AxException(AxInterpreter Caller, String Message) : base(Message)
         {
-            this.Caller    = Caller;
-            this.CallStack = Caller.CallStack;
+            this.Caller = Caller;
+            CallStack = Caller.CallStack;
             //CallStack.Reverse();
         }
 
-        protected AxException(SerializationInfo info, StreamingContext context): base(info, context)
+        protected AxException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
             if (info != null)
             {
-                CallStack = (List<String>)info.GetValue("CallStack", typeof(List<String>));
+                CallStack = (List<String>) info.GetValue("CallStack", typeof (List<String>));
             }
         }
 

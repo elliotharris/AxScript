@@ -17,15 +17,15 @@ namespace STD
         {
             if (inp is string)
             {
-                return ((String)inp).Length;
+                return ((String) inp).Length;
             }
-            return ((List<object>)inp).Count;
+            return ((List<object>) inp).Count;
         }
 
         [ExportAx("remove", "Removes values from an array.")]
         public static void ArrayRemove(List<object> array, params object[] values)
         {
-            foreach (var a in values)
+            foreach (object a in values)
             {
                 array.Remove(a);
             }
@@ -34,7 +34,7 @@ namespace STD
         [ExportAx("removeat", "Removes the values at the indexes specified.")]
         public static void ArrayRemoveAt(List<object> array, params int[] indexes)
         {
-            foreach (var i in indexes)
+            foreach (int i in indexes)
             {
                 array.RemoveAt(i);
             }
@@ -55,21 +55,21 @@ namespace STD
             }
             else
             {
-                Console.WriteLine((string)format, parameters);                
+                Console.WriteLine((string) format, parameters);
             }
         }
 
         [ExportAx("readkey", "Reads in a single keypress")]
         public static double ReadKey(bool hide = false)
         {
-            var c = Console.ReadKey(hide).KeyChar;
+            char c = Console.ReadKey(hide).KeyChar;
             return c;
         }
 
         [ExportAx("byte", "Converts a char to a byte.")]
         public static byte GetByte(dynamic input)
         {
-            return input is string ? (byte)input[0] : (byte)input;
+            return input is string ? (byte) input[0] : (byte) input;
         }
 
         [ExportAx("read", "Reads in a line.")]
@@ -83,9 +83,13 @@ namespace STD
         public static void Print(object format, params object[] parameters)
         {
             if (format is string)
-                Console.Write((string)format, parameters);
+            {
+                Console.Write((string) format, parameters);
+            }
             else
+            {
                 Console.Write(format);
+            }
         }
 
         [ExportAx("printarr", "Prints out all values of an enumerable")]

@@ -10,35 +10,25 @@ namespace axScript3
 {
     public class AxInterpreter
     {
-        public String Script;
-        public Dictionary<String, AxFunction> Functions = new Dictionary<String, AxFunction>();
-        public Dictionary<String, NetFunction> SharpFunctions = new Dictionary<String, NetFunction>();
-        public Dictionary<String, object> Variables = new Dictionary<String, object>();
-        public Dictionary<String, Tuple<string, int>> Labels = new Dictionary<String, Tuple<string, int>>();
-        public Dictionary<String, NetFunction> Hooks = new Dictionary<String, NetFunction>();
-        public List<String> CallStack = new List<String>();
-
-        public delegate string SharpFunction(string[] parameters);
-
-        public string EntryPoint;
-        public bool Debug;
-        public List<String> Modules = new List<string>();
+        #region Delegates
 
         public delegate bool ScriptEndEvent(Exception e);
 
-        public event ScriptEndEvent ScriptError;
+        public delegate string SharpFunction(string[] parameters);
 
-        public bool OnScriptError(Exception e)
-        {
-            return ScriptError == null || ScriptError(e);
-        }
+        #endregion
 
-        public event ScriptEndEvent ScriptEnd;
+        public List<String> CallStack = new List<String>();
 
-        public bool OnScriptEnd(Exception e)
-        {
-            return ScriptEnd == null || ScriptEnd(e);
-        }
+        public bool Debug;
+        public string EntryPoint;
+        public Dictionary<String, AxFunction> Functions = new Dictionary<String, AxFunction>();
+        public Dictionary<String, NetFunction> Hooks = new Dictionary<String, NetFunction>();
+        public Dictionary<String, Tuple<string, int>> Labels = new Dictionary<String, Tuple<string, int>>();
+        public List<String> Modules = new List<string>();
+        public String Script;
+        public Dictionary<String, NetFunction> SharpFunctions = new Dictionary<String, NetFunction>();
+        public Dictionary<String, object> Variables = new Dictionary<String, object>();
 
         public AxInterpreter(Boolean debug = false)
         {
@@ -252,8 +242,15 @@ namespace axScript3
 
         #region Interpreter Functions
 
-        private readonly Stack<String> _scriptStack = new Stack<string>();
+        public enum VariableType
+        {
+            Null = -1,
+            Local,
+            Global,
+        }
+
         private readonly Stack<String> _runPathStack = new Stack<string>();
+        private readonly Stack<String> _scriptStack = new Stack<string>();
         private int _prefix;
 
         public string Prefix
@@ -984,13 +981,6 @@ namespace axScript3
             return Var;
         }
 
-        public enum VariableType
-        {
-            Null = -1,
-            Local,
-            Global,
-        }
-
         protected void GetFunctions()
         {
             for (int i = 0; i < Script.Length; i++)
@@ -1218,6 +1208,20 @@ namespace axScript3
 
         #endregion
 
+        public event ScriptEndEvent ScriptError;
+
+        public bool OnScriptError(Exception e)
+        {
+            return ScriptError == null || ScriptError(e);
+        }
+
+        public event ScriptEndEvent ScriptEnd;
+
+        public bool OnScriptEnd(Exception e)
+        {
+            return ScriptEnd == null || ScriptEnd(e);
+        }
+
         public void AddDefault()
         {
             Variables.Add(Prefix + "null", null);
@@ -1231,4 +1235,3 @@ namespace axScript3
         }
     }
 }
-

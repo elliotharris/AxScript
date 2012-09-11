@@ -11,18 +11,27 @@ namespace axScript3
 			var funcs = new Dictionary<String, NetFunction>();
 			
 			funcs.Add("add", GetFunc("Add"));
+            funcs.Add("+", GetFunc("Add"));
 			funcs.Add("sub", GetFunc("Subtract"));
+            funcs.Add("-", GetFunc("Subtract"));
 			funcs.Add("div", GetFunc("Divide"));
+            funcs.Add("/", GetFunc("Divide"));
 			funcs.Add("mult", GetFunc("Multiply"));
+            funcs.Add("*", GetFunc("Multiply"));
 			funcs.Add("double", GetFunc("ToDouble"));
             funcs.Add("int", GetFunc("ToInt"));
 			funcs.Add("string", GetFunc("_ToString"));
 			funcs.Add("lt", GetFunc("LessThan"));
+            funcs.Add("<", GetFunc("LessThan"));
 			funcs.Add("gt", GetFunc("GreaterThan"));
+            funcs.Add(">", GetFunc("LessThan"));
             funcs.Add("eq", GetFunc("EqualTo"));
+            funcs.Add("==", GetFunc("LessThan"));
             funcs.Add("neq", GetFunc("NotEqualTo"));
+            funcs.Add("!=", GetFunc("LessThan"));
             funcs.Add("scope", GetFunc("ReturnScope"));
             funcs.Add("isset", GetFunc("IsPointerValid"));
+            funcs.Add("??", GetFunc("IsPointerValid"));
             funcs.Add("type", GetFunc("TypeOf"));
 
 			return funcs;

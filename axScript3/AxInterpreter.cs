@@ -46,7 +46,6 @@ namespace axScript3
 			//Instance based functions
 			RegisterOwnFunction("set", "Set");
 			RegisterOwnFunction("get", "TryGetVar");
-			RegisterOwnFunction("addFunc", "AddStaticFunction");
 			RegisterOwnFunction("if", "If");
 			RegisterOwnFunction("while", "While");
 			RegisterOwnFunction("do", "Do");
@@ -546,7 +545,7 @@ namespace axScript3
 					int rangestart = int.Parse(temp[0]);
 					int rangeend = int.Parse(temp[1]);
 
-					IEnumerable<int> dbl = CreateRange(rangestart, rangeend, rangediff);
+					var dbl = CreateRange(rangestart, rangeend, rangediff);
 
 					parameters.Add(dbl);
 				}
@@ -570,11 +569,6 @@ namespace axScript3
 
                 string Variable = funcString.Substring(start + 1, end - start - 1);
 
-                if (Variable[0] == '-')
-                {
-                    throw new AxException(this, "You cannot use a pointer to a compiler variable. Compiler variables are denoted by a '-' (minus) prefix");
-                }
-
                 VariableType varType = VariableType.Null;
                 if (Params.ContainsKey(Variable))
                 {
@@ -589,23 +583,6 @@ namespace axScript3
 
                 parameters.Add(varptr);
             }
-            //else if (start + 4 <= funcString.Length && funcString.Substring(start, 4) == "true") //true keyword
-            //{
-            //    end = funcString.IndexOf(" ", start);
-            //    if (end == -1) end = funcString.Length;
-
-            //    string _par = funcString.Substring(start, end - start);
-
-            //    if (_par == "true")
-            //        parameters.Add(true);
-            //}
-            //else if (start + 5 <= funcString.Length && funcString.Substring(start, 5) == "false") // false keyword
-            //{
-            //    end = funcString.IndexOf(" ", start);
-            //    if (end == -1) end = funcString.Length;
-            //    if (funcString.Substring(start, end - start) == "false")
-            //        parameters.Add(false);
-            //}
             else if (funcString[start] == '@') // iterator
             {
                 start++;
@@ -653,7 +630,6 @@ namespace axScript3
 
                 if (loc2index != -1 && (loc2index < locindex || locindex == -1)) locindex = loc2index;
                 varName = locindex != -1 ? funcString.Substring(start + 1, locindex - start - 1) : funcString.Substring(start + 1, end - start - 1);
-                varName = varName;
                 Var = GetVar(varName, Params);
                 ExtrapolateVariable(funcString, end, ref Var, ref locindex);
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace axScript3
+﻿namespace axScript3
 {
     public class AxVariablePtr
     {

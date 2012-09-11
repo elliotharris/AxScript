@@ -10,7 +10,7 @@
 		(set ^err error)
 		
 		(if (eq type #EXITCODE_ERROR) {
-			(set ^err (string err.InnerException))
+			(set ^err (string err))
 			(set ^pos (err:IndexOf "--->"))
 			(set ^pos (err:IndexOf "--->" (add pos 1)))
 			(set ^pos (err:IndexOf "--->" (add pos 1)))

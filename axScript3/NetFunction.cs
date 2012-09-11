@@ -78,7 +78,7 @@ namespace axScript3
 			}
 			catch (Exception e)
 			{
-			    throw;// new Exception("Cannot complete call to C# function: \"" + Method.Name + "\", " + e.Message);
+			    throw new Exception("Cannot complete call to C# function: \"" + Method.Name + "\", " + e.Message, e);
 			}
 		}
 	}

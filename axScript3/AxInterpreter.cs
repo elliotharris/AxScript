@@ -11,24 +11,20 @@ namespace axScript3
     public class AxInterpreter
     {
         #region Delegates
-
         public delegate bool ScriptEndEvent(Exception e);
-
-        public delegate string SharpFunction(string[] parameters);
-
         #endregion
 
-        public List<String> CallStack = new List<String>();
+        public readonly List<String> CallStack = new List<String>();
 
-        public bool Debug;
+        public readonly bool Debug;
         public string EntryPoint;
-        public Dictionary<String, AxFunction> Functions = new Dictionary<String, AxFunction>();
-        public Dictionary<String, NetFunction> Hooks = new Dictionary<String, NetFunction>();
+        public readonly Dictionary<String, AxFunction> Functions = new Dictionary<String, AxFunction>();
+        public readonly Dictionary<String, NetFunction> Hooks = new Dictionary<String, NetFunction>();
         public Dictionary<String, Tuple<string, int>> Labels = new Dictionary<String, Tuple<string, int>>();
-        public List<String> Modules = new List<string>();
+        public readonly List<String> Modules = new List<string>();
         public String Script;
-        public Dictionary<String, NetFunction> SharpFunctions = new Dictionary<String, NetFunction>();
-        public Dictionary<String, object> Variables = new Dictionary<String, object>();
+        public readonly Dictionary<String, NetFunction> SharpFunctions = new Dictionary<String, NetFunction>();
+        public readonly Dictionary<String, object> Variables = new Dictionary<String, object>();
 
         public AxInterpreter(Boolean debug = false)
         {
@@ -56,26 +52,19 @@ namespace axScript3
 
         #region Dynamic Functions
 
-        protected void RegisterOwnFunction(string name, string funcName)
+        private void RegisterOwnFunction(string name, string funcName)
         {
             RegisterFunction(name, new NetFunction(GetType().GetMethod(funcName), this));
         }
 
         public void GotoLabel(string func, string name)
         {
-            AxFunction axFunc = Functions[func];
+            var axFunc = Functions[func];
 
-            foreach (var A in axFunc.Tags)
+            foreach (var a in axFunc.Tags.Where(a => a.Key == "Label").Where(a => a.Value.Item1 == name))
             {
-                if (A.Key == "Label")
-                {
-                    if (A.Value.Item1 == name)
-                    {
-                        Console.WriteLine("goto: {0}:{1}", func, A.Value.Item2);
-                        //(axFunc.InnerFunction.Substring(A.Value.Item2));
-                        break;
-                    }
-                }
+                Console.WriteLine("go to: {0}:{1}", func, a.Value.Item2);
+                break;
             }
         }
 
@@ -85,20 +74,16 @@ namespace axScript3
         }
 
         // DEPRECIATED - isset now static and works on function pointers.
-        public bool DoesVarExist(String Var)
+        public bool DoesVarExist(String var)
         {
-            return Variables.ContainsKey(Var);
+            return Variables.ContainsKey(var);
         }
 
-        public object TryGetVar(AxVariablePtr Var)
+        public object TryGetVar(AxVariablePtr var)
         {
             object output;
-            bool success = Variables.TryGetValue(Var, out output);
-            if (success)
-            {
-                return output;
-            }
-            return null;
+            var success = Variables.TryGetValue(var, out output);
+            return success ? output : null;
         }
 
         public void If(bool cond, AxFunction then)
@@ -132,7 +117,7 @@ namespace axScript3
             }
             else if (cond is Boolean)
             {
-                throw new AxException(this, "Using a boolean directly will mean it wont get updated, you need to use a variable pointer.");
+                throw new AxException(this, "Using a Boolean directly will mean it wont get updated, you need to use a variable pointer.");
             }
             else if (cond is AxFunction)
             {
@@ -154,9 +139,8 @@ namespace axScript3
         public void For(object range, AxFunction func)
         {
             var r = (IEnumerable) range;
-            foreach (object v in r)
+            foreach (var b in from object v in r select func.ParamCount == 1 ? new Dictionary<string, object> {{func.Parameters[0], v}} : new Dictionary<string, object>())
             {
-                Dictionary<string, object> b = func.ParamCount == 1 ? new Dictionary<string, object> {{func.Parameters[0], v}} : new Dictionary<string, object>();
                 func.Call(this, b);
             }
         }
@@ -164,26 +148,12 @@ namespace axScript3
 
         public bool And(params AxFunction[] Bools)
         {
-            foreach (AxFunction a in Bools)
-            {
-                if (!(bool) a.Call(this, null))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return Bools.All(a => (bool) a.Call(this, null));
         }
 
         public bool Or(params AxFunction[] Bools)
         {
-            foreach (AxFunction a in Bools)
-            {
-                if ((bool) a.Call(this, null))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return Bools.Any(a => (bool) a.Call(this, null));
         }
 
         public bool Not(AxFunction input)
@@ -212,15 +182,7 @@ namespace axScript3
             {
                 throw Error("Cannot use global set to set local variable \"{0}\", please use local set instead.", var);
             }
-            object nValues;
-            if (values.Length == 1)
-            {
-                nValues = values[0];
-            }
-            else
-            {
-                nValues = new List<object>(values);
-            }
+            var nValues = values.Length == 1 ? values[0] : new List<object>(values);
             if (Variables.ContainsKey(var))
             {
                 Variables[var] = nValues;
@@ -264,8 +226,8 @@ namespace axScript3
             _scriptStack.Push(Script);
             _prefix++;
             AddDefault();
-            bool first = true;
-            bool looping = true;
+            var first = true;
+            var looping = true;
             while (looping)
             {
                 try
@@ -307,51 +269,51 @@ namespace axScript3
             CallStack.Add(func);
 
             //Class Function Call
-            int colonPos = func.IndexOf(':');
+            var colonPos = func.IndexOf(':');
             if (colonPos != -1)
             {
-                int locindex = func.IndexOf("[", 0, colonPos);
-                int loc2index = func.IndexOf(".", 0, colonPos);
-                string varName = "";
-                if (loc2index != -1 && (locindex == -1 || loc2index < locindex))
+                var locIndex = func.IndexOf("[", 0, colonPos);
+                var loc2Index = func.IndexOf(".", 0, colonPos);
+                string varName;
+                if (loc2Index != -1 && (locIndex == -1 || loc2Index < locIndex))
                 {
-                    locindex = loc2index;
+                    locIndex = loc2Index;
                 }
-                if (locindex != -1)
+                if (locIndex != -1)
                 {
-                    varName = func.Substring(0, locindex);
+                    varName = func.Substring(0, locIndex);
                 }
                 else
                 {
                     varName = Prefix + func.Substring(0, colonPos);
                 }
-                object Var = GetVar(varName, locals);
-                int spacePos = func.IndexOf(' ', colonPos);
+                var var = GetVar(varName, locals);
+                var spacePos = func.IndexOf(' ', colonPos);
                 if (spacePos == -1)
                 {
                     spacePos = func.Length - 1;
                 }
                 spacePos -= colonPos;
-                string Method = func.Substring(colonPos + 1, spacePos);
-                ExtrapolateVariable(func, colonPos, ref Var, ref locindex);
-                Type[] paramTypes = parameters.Select(p => p.GetType()).ToArray();
-                return new NetFunction(Var.GetType().GetMethod(Method, paramTypes), Var).Call(parameters.ToArray());
+                var Method = func.Substring(colonPos + 1, spacePos);
+                ExtrapolateVariable(func, colonPos, ref var, ref locIndex);
+                var paramTypes = parameters.Select(p => p.GetType()).ToArray();
+                return new NetFunction(var.GetType().GetMethod(Method, paramTypes), var).Call(parameters.ToArray());
             }
 
-            AxFunction AxFunc = null;
-            bool call = false;
-            bool pprefix = true;
+            AxFunction axFunc = null;
+            var call = false;
+            var pprefix = true;
 
             if (Functions.ContainsKey(Prefix + func))
             {
-                AxFunc = Functions[Prefix + func];
+                axFunc = Functions[Prefix + func];
                 call = true;
             }
             else if (Variables.ContainsKey(Prefix + func))
             {
-                object c = Variables[Prefix + func];
-                AxFunc = c as AxFunction;
-                if (AxFunc == null)
+                var c = Variables[Prefix + func];
+                axFunc = c as AxFunction;
+                if (axFunc == null)
                 {
                     return c;
                 }
@@ -360,11 +322,11 @@ namespace axScript3
             }
             if (call)
             {
-                int paramC = AxFunc.ParamCount;
+                var paramC = axFunc.ParamCount;
                 var Params = new Dictionary<String, object>();
-                string rPrefix = pprefix ? Prefix : "";
+                var rPrefix = pprefix ? Prefix : "";
 
-                if (!AxFunc.FixedParams)
+                if (!axFunc.FixedParams)
                 {
                     var args = new List<object>();
                     for (int i = paramC - 1; i < parameters.Count; i++)
@@ -379,9 +341,9 @@ namespace axScript3
                 {
                     for (int i = 0; i < paramC; i++)
                     {
-                        if (AxFunc.Parameters[i] != "...")
+                        if (axFunc.Parameters[i] != "...")
                         {
-                            Params.Add(rPrefix + AxFunc.Parameters[i], parameters[i]);
+                            Params.Add(rPrefix + axFunc.Parameters[i], parameters[i]);
                         }
                     }
                 }
@@ -389,7 +351,7 @@ namespace axScript3
                 {
                     throw new AxException(this, "Parameter count mismatch while calling: \"" + func + "\\");
                 }
-                object ret = AxFunc.Call(this, Params);
+                var ret = axFunc.Call(this, Params);
                 return ret;
             }
 
@@ -413,8 +375,8 @@ namespace axScript3
 
         public object CallFuncFromString(String funcString, Dictionary<String, object> Params)
         {
-            int spaceIndex = funcString.IndexOf(' ');
-            int oSpaceIndex = spaceIndex;
+            var spaceIndex = funcString.IndexOf(' ');
+            var oSpaceIndex = spaceIndex;
             var parameters = new List<object>();
             String funcName;
             if (spaceIndex != -1)
@@ -441,8 +403,8 @@ namespace axScript3
             // HACK: Remove hacky lset.
             if (funcName == "lset")
             {
-                string var = parameters[0].ToString();
-                object value = parameters[1];
+                var var = parameters[0].ToString();
+                var value = parameters[1];
                 var = Prefix + var;
                 if (Params.ContainsKey(var))
                 {
@@ -457,7 +419,7 @@ namespace axScript3
             }
             if (funcName == "return")
             {
-                object value = parameters[0];
+                var value = parameters[0];
                 if (Params.ContainsKey(Prefix + "return"))
                 {
                     Params[Prefix + "return"] = value;
@@ -485,39 +447,34 @@ namespace axScript3
             if (funcString[start] == '"') // String
             {
                 var sb = new StringBuilder();
-                int j = start + 1;
-                bool escapeState = false;
+                var j = start + 1;
+                var escapeState = false;
                 while (funcString[j] != '"' || escapeState)
                 {
                     if (escapeState)
                     {
-                        if (funcString[j] == 'n')
+                        switch (funcString[j])
                         {
-                            sb.Append('\n');
-                        }
-                        else if (funcString[j] == 'r')
-                        {
-                            sb.Append('\r');
-                        }
-                        else if (funcString[j] == '"')
-                        {
-                            sb.Append('"');
-                        }
-                        else if (funcString[j] == 't')
-                        {
-                            sb.Append('\t');
-                        }
-                        else if (funcString[j] == '0')
-                        {
-                            sb.Append('\0');
-                        }
-                        else if (funcString[j] == '\\')
-                        {
-                            sb.Append('\\');
-                        }
-                        else
-                        {
-                            throw new AxException(this, "Malformed escape sequence");
+                            case 'n':
+                                sb.Append('\n');
+                                break;
+                            case 'r':
+                                sb.Append('\r');
+                                break;
+                            case '"':
+                                sb.Append('"');
+                                break;
+                            case 't':
+                                sb.Append('\t');
+                                break;
+                            case '0':
+                                sb.Append('\0');
+                                break;
+                            case '\\':
+                                sb.Append('\\');
+                                break;
+                            default:
+                                throw new AxException(this, "Malformed escape sequence");
                         }
                         escapeState = false;
                         j++;
@@ -548,7 +505,7 @@ namespace axScript3
                 {
                     end = funcString.Length;
                 }
-                string num = funcString.Substring(start, end - start);
+                var num = funcString.Substring(start, end - start);
                 if (num.StartsWith("0x"))
                 {
                     int paramInt;
@@ -587,7 +544,6 @@ namespace axScript3
                 }
                 else
                 {
-                    int paramInt;
                     if (num.Contains('.'))
                     {
                         double paramDbl;
@@ -602,6 +558,7 @@ namespace axScript3
                     }
                     else
                     {
+                        int paramInt;
                         if (int.TryParse(num, out paramInt))
                         {
                             parameters.Add(paramInt);
@@ -613,239 +570,238 @@ namespace axScript3
                     }
                 }
             }
-            else if (funcString[start] == '(') // Function call
+            else switch (funcString[start])
             {
-                Tuple<string, int> param = Extract(funcString.Substring(start));
-                parameters.Add(CallFuncFromString(param.Item1, Params));
-                end = start + param.Item2;
-            }
-            else if (funcString[start] == '{') // Lambda
-            {
-                Tuple<string, int> extr = Extract(funcString.Substring(start), '{', '}');
-                string func = extr.Item1;
-                var _parameters = new string[0];
-                int paramindex = 0;
-                while (paramindex < func.Length && func[paramindex] != '|')
-                {
-                    if (func[paramindex] == '(')
+                case '(':
                     {
-                        paramindex = -1;
-                        break;
+                        Tuple<string, int> param = Extract(funcString.Substring(start));
+                        parameters.Add(CallFuncFromString(param.Item1, Params));
+                        end = start + param.Item2;
                     }
-                    paramindex++;
-                }
-                if (paramindex != -1)
-                {
-                    _parameters = func.Substring(0, paramindex).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(x => Prefix + x).ToArray();
-                    func = func.Substring(paramindex + 1);
-                }
-
-                parameters.Add(new AxFunction(_parameters, func, Prefix));
-                end = start + extr.Item2;
-            }
-            else if (funcString[start] == '%') // Return Lambda
-            {
-                Tuple<string, int> extr = Extract(funcString.Substring(start + 1), '{', '}');
-                string func = extr.Item1;
-                var _parameters = new string[0];
-                int paramindex = 0;
-                while (func[paramindex] != '|')
-                {
-                    paramindex++;
-                    if (paramindex >= func.Length || func[paramindex] == '(')
+                    break;
+                case '{':
                     {
-                        paramindex = -1;
-                        break;
+                        var extr = Extract(funcString.Substring(start), '{', '}');
+                        var func = extr.Item1;
+                        var iparameters = new string[0];
+                        var paramindex = 0;
+                        while (paramindex < func.Length && func[paramindex] != '|')
+                        {
+                            if (func[paramindex] == '(')
+                            {
+                                paramindex = -1;
+                                break;
+                            }
+                            paramindex++;
+                        }
+                        if (paramindex != -1)
+                        {
+                            iparameters = func.Substring(0, paramindex).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(x => Prefix + x).ToArray();
+                            func = func.Substring(paramindex + 1);
+                        }
+
+                        parameters.Add(new AxFunction(iparameters, func, Prefix));
+                        end = start + extr.Item2;
                     }
-                }
-                if (paramindex != -1)
-                {
-                    _parameters = func.Substring(0, paramindex).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(x => Prefix + x).ToArray();
-                    func = func.Substring(paramindex + 1).TrimStart();
-                }
-
-                parameters.Add(new AxFunction(_parameters, String.Format("(return ({0}))", func), Prefix, true));
-                end = start + extr.Item2 + 1;
-            }
-            else if (funcString[start] == '[') // Range
-            {
-                Tuple<string, int> extr = Extract(funcString.Substring(start), '[', ']');
-                string str = extr.Item1;
-
-                if (str.IndexOf(',') != -1)
-                {
-                    IEnumerable<double> a = str.Split(',').Select(x => double.Parse(x));
-                    parameters.Add(a);
-                }
-                else if (str.IndexOf("..") != -1)
-                {
-                    int rangediff = 1;
-                    string[] temp;
-                    if (str.IndexOf('|') != -1)
+                    break;
+                case '%':
                     {
-                        temp = str.Split('|');
-                        rangediff = int.Parse(temp[1]);
-                        str = temp[0];
+                        var extr = Extract(funcString.Substring(start + 1), '{', '}');
+                        var func = extr.Item1;
+                        var iparameters = new string[0];
+                        var paramindex = 0;
+                        while (func[paramindex] != '|')
+                        {
+                            paramindex++;
+                            if (paramindex >= func.Length || func[paramindex] == '(')
+                            {
+                                paramindex = -1;
+                                break;
+                            }
+                        }
+                        if (paramindex != -1)
+                        {
+                            iparameters = func.Substring(0, paramindex).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(x => Prefix + x).ToArray();
+                            func = func.Substring(paramindex + 1).TrimStart();
+                        }
+
+                        parameters.Add(new AxFunction(iparameters, String.Format("(return ({0}))", func), Prefix, true));
+                        end = start + extr.Item2 + 1;
                     }
+                    break;
+                case '[':
+                    {
+                        var extr = Extract(funcString.Substring(start), '[', ']');
+                        var str = extr.Item1;
 
-                    temp = str.Split(new[] {".."}, StringSplitOptions.RemoveEmptyEntries);
-                    int rangestart = int.Parse(temp[0]);
-                    int rangeend = int.Parse(temp[1]);
+                        if (str.IndexOf(',') != -1)
+                        {
+                            var a = str.Split(',').Select(double.Parse);
+                            parameters.Add(a);
+                        }
+                        else if (str.IndexOf("..") != -1)
+                        {
+                            var rangediff = 1;
+                            string[] temp;
+                            if (str.IndexOf('|') != -1)
+                            {
+                                temp = str.Split('|');
+                                rangediff = int.Parse(temp[1]);
+                                str = temp[0];
+                            }
 
-                    IEnumerable<int> dbl = CreateRange(rangestart, rangeend, rangediff);
+                            temp = str.Split(new[] {".."}, StringSplitOptions.RemoveEmptyEntries);
+                            var rangestart = int.Parse(temp[0]);
+                            var rangeend = int.Parse(temp[1]);
 
-                    parameters.Add(dbl);
-                }
+                            var dbl = CreateRange(rangestart, rangeend, rangediff);
 
-                end = start + extr.Item2;
-            }
-            else if (funcString[start] == '*') //function pointer
-            {
-                end = funcString.IndexOf(" ", start);
-                if (end == -1)
-                {
-                    end = funcString.Length;
-                }
+                            parameters.Add(dbl);
+                        }
 
-                string ptrfunc = funcString.Substring(start + 1, end - start - 1);
+                        end = start + extr.Item2;
+                    }
+                    break;
+                case '*':
+                    {
+                        end = funcString.IndexOf(" ", start);
+                        if (end == -1)
+                        {
+                            end = funcString.Length;
+                        }
 
-                if (Functions.ContainsKey(Prefix + ptrfunc))
-                {
-                    parameters.Add(Functions[Prefix + ptrfunc]);
-                }
-                else
-                {
-                    throw Error("Invalid function refference: \"{0}\", function not found.", ptrfunc);
-                }
-            }
-            else if (funcString[start] == '^') //variable pointer
-            {
-                end = funcString.IndexOf(" ", start);
-                if (end == -1)
-                {
-                    end = funcString.Length;
-                }
+                        var ptrfunc = funcString.Substring(start + 1, end - start - 1);
 
-                string Variable = funcString.Substring(start + 1, end - start - 1);
+                        if (Functions.ContainsKey(Prefix + ptrfunc))
+                        {
+                            parameters.Add(Functions[Prefix + ptrfunc]);
+                        }
+                        else
+                        {
+                            throw Error("Invalid function refference: \"{0}\", function not found.", ptrfunc);
+                        }
+                    }
+                    break;
+                case '^':
+                    {
+                        end = funcString.IndexOf(" ", start);
+                        if (end == -1)
+                        {
+                            end = funcString.Length;
+                        }
 
-                var varType = VariableType.Null;
-                if (Params.ContainsKey(Variable))
-                {
-                    varType = VariableType.Local;
-                }
-                else if (Variables.ContainsKey(Variable))
-                {
-                    varType = VariableType.Global;
-                }
+                        string Variable = funcString.Substring(start + 1, end - start - 1);
 
-                var varptr = new AxVariablePtr(Prefix + Variable, varType);
+                        var varType = VariableType.Null;
+                        if (Params.ContainsKey(Variable))
+                        {
+                            varType = VariableType.Local;
+                        }
+                        else if (Variables.ContainsKey(Variable))
+                        {
+                            varType = VariableType.Global;
+                        }
 
-                parameters.Add(varptr);
-            }
-            else if (funcString[start] == '@') // iterator
-            {
-                start++;
-                object Var;
-                string varName;
-                end = funcString.IndexOf(" ", start);
-                if (end == -1)
-                {
-                    end = funcString.Length;
-                }
-                int locindex = funcString.IndexOf("[", start, end - start);
-                int loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
-                if (loc2index != -1 && loc2index < locindex)
-                {
-                    locindex = loc2index;
-                }
-                if (locindex != -1)
-                {
-                    varName = funcString.Substring(start, locindex - start);
-                }
-                else
-                {
-                    varName = funcString.Substring(start, end - start);
-                }
-                varName = Prefix + varName;
-                Var = GetVar(varName, Params);
-                ExtrapolateVariable(funcString, end, ref Var, ref locindex);
+                        var varptr = new AxVariablePtr(Prefix + Variable, varType);
 
-                parameters.Add(Var);
-            }
-            else if (funcString[start] == '$') //get global variable always, even if local exists with same name.
-            {
-                object Var;
-                string varName;
-                end = funcString.IndexOf(" ", start);
-                if (end == -1)
-                {
-                    end = funcString.Length;
-                }
-                int locindex = funcString.IndexOf("[", start + 1, end - start - 1);
-                int loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
-                if (loc2index != -1 && loc2index < locindex)
-                {
-                    locindex = loc2index;
-                }
-                if (locindex != -1)
-                {
-                    varName = funcString.Substring(start + 1, locindex - start - 1);
-                }
-                else
-                {
-                    varName = funcString.Substring(start + 1, end - start - 1);
-                }
+                        parameters.Add(varptr);
+                    }
+                    break;
+                case '@':
+                    {
+                        start++;
+                        string varName;
+                        end = funcString.IndexOf(" ", start);
+                        if (end == -1)
+                        {
+                            end = funcString.Length;
+                        }
+                        int locindex = funcString.IndexOf("[", start, end - start);
+                        int loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
+                        if (loc2index != -1 && loc2index < locindex)
+                        {
+                            locindex = loc2index;
+                        }
+                        if (locindex != -1)
+                        {
+                            varName = funcString.Substring(start, locindex - start);
+                        }
+                        else
+                        {
+                            varName = funcString.Substring(start, end - start);
+                        }
+                        varName = Prefix + varName;
+                        var var = GetVar(varName, Params);
+                        ExtrapolateVariable(funcString, end, ref var, ref locindex);
+
+                        parameters.Add(var);
+                    }
+                    break;
+                case '$':
+                    {
+                        end = funcString.IndexOf(" ", start);
+                        if (end == -1)
+                        {
+                            end = funcString.Length;
+                        }
+                        var locindex = funcString.IndexOf("[", start + 1, end - start - 1);
+                        var loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
+                        if (loc2index != -1 && loc2index < locindex)
+                        {
+                            locindex = loc2index;
+                        }
+                        var varName = locindex != -1 ? funcString.Substring(start + 1, locindex - start - 1) : funcString.Substring(start + 1, end - start - 1);
 
 
-                Var = Variables[Prefix + varName];
-                ExtrapolateVariable(funcString, end, ref Var, ref locindex);
+                        var var = Variables[Prefix + varName];
+                        ExtrapolateVariable(funcString, end, ref var, ref locindex);
 
-                parameters.Add(Var);
-            }
-            else if (funcString[start] == '#') // No prefixing. For variables imported by modules.
-            {
-                object Var;
-                string varName;
-                end = funcString.IndexOf(" ", start);
-                if (end == -1)
-                {
-                    end = funcString.Length;
-                }
-                int locindex = funcString.IndexOf("[", start, end - start);
-                int loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
+                        parameters.Add(var);
+                    }
+                    break;
+                case '#':
+                    {
+                        end = funcString.IndexOf(" ", start);
+                        if (end == -1)
+                        {
+                            end = funcString.Length;
+                        }
+                        var locindex = funcString.IndexOf("[", start, end - start);
+                        var loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
 
-                if (loc2index != -1 && (loc2index < locindex || locindex == -1))
-                {
-                    locindex = loc2index;
-                }
-                varName = locindex != -1 ? funcString.Substring(start + 1, locindex - start - 1) : funcString.Substring(start + 1, end - start - 1);
-                Var = GetVar(varName, Params);
-                ExtrapolateVariable(funcString, end, ref Var, ref locindex);
+                        if (loc2index != -1 && (loc2index < locindex || locindex == -1))
+                        {
+                            locindex = loc2index;
+                        }
+                        var varName = locindex != -1 ? funcString.Substring(start + 1, locindex - start - 1) : funcString.Substring(start + 1, end - start - 1);
+                        var Var = GetVar(varName, Params);
+                        ExtrapolateVariable(funcString, end, ref Var, ref locindex);
 
-                parameters.Add(Var);
-            }
-            else //local has priority.
-            {
-                object Var;
-                string varName;
-                end = funcString.IndexOf(" ", start);
-                if (end == -1)
-                {
-                    end = funcString.Length;
-                }
-                int locindex = funcString.IndexOf("[", start, end - start);
-                int loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
+                        parameters.Add(Var);
+                    }
+                    break;
+                default:
+                    {
+                        end = funcString.IndexOf(" ", start);
+                        if (end == -1)
+                        {
+                            end = funcString.Length;
+                        }
+                        var locindex = funcString.IndexOf("[", start, end - start);
+                        var loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
 
-                if (loc2index != -1 && (loc2index < locindex || locindex == -1))
-                {
-                    locindex = loc2index;
-                }
-                varName = locindex != -1 ? funcString.Substring(start, locindex - start) : funcString.Substring(start, end - start);
-                varName = Prefix + varName;
-                Var = GetVar(varName, Params);
-                ExtrapolateVariable(funcString, end, ref Var, ref locindex);
+                        if (loc2index != -1 && (loc2index < locindex || locindex == -1))
+                        {
+                            locindex = loc2index;
+                        }
+                        var varName = locindex != -1 ? funcString.Substring(start, locindex - start) : funcString.Substring(start, end - start);
+                        varName = Prefix + varName;
+                        var var = GetVar(varName, Params);
+                        ExtrapolateVariable(funcString, end, ref var, ref locindex);
 
-                parameters.Add(Var);
+                        parameters.Add(var);
+                    }
+                    break;
             }
 
 
@@ -865,13 +821,13 @@ namespace axScript3
 
             while (locindex < end)
             {
-                char c = funcString[locindex];
+                var c = funcString[locindex];
                 if (c == '[')
                 {
-                    int locIndexEnd = funcString.IndexOf("]", locindex + 1, end - locindex - 1);
-                    string indexerStr = funcString.Substring(locindex + 1, locIndexEnd - locindex - 1);
-                    int indexer = int.Parse(indexerStr);
-                    IEnumerator Enum = ((IEnumerable) Var).GetEnumerator();
+                    var locIndexEnd = funcString.IndexOf("]", locindex + 1, end - locindex - 1);
+                    var indexerStr = funcString.Substring(locindex + 1, locIndexEnd - locindex - 1);
+                    var indexer = int.Parse(indexerStr);
+                    var Enum = ((IEnumerable) Var).GetEnumerator();
                     Enum.MoveNext();
 
                     for (int i = 0; i < indexer; i++)
@@ -890,8 +846,8 @@ namespace axScript3
                 }
                 else if (c == '.')
                 {
-                    int locIndexEnd = funcString.IndexOf("[", locindex + 1, end - locindex - 1);
-                    int locIndexEnd2 = funcString.IndexOf(".", locindex + 1, end - locindex - 1);
+                    var locIndexEnd = funcString.IndexOf("[", locindex + 1, end - locindex - 1);
+                    var locIndexEnd2 = funcString.IndexOf(".", locindex + 1, end - locindex - 1);
                     if (locIndexEnd2 != -1 && locIndexEnd2 < locIndexEnd)
                     {
                         locIndexEnd = locIndexEnd2;
@@ -1038,19 +994,14 @@ namespace axScript3
 
         #region Helper Functions
 
-        public static Tuple<string, int> Extract(string Script)
-        {
-            return Extract(Script, '(', ')');
-        }
-
-        public static Tuple<string, int> Extract(string Script, char startblock, char endblock, bool escapeCounts = false)
+        public static Tuple<string, int> Extract(string Script, char startblock = '(', char endblock = ')', bool escapeCounts = false)
         {
             //Add one to par each time we hit a startblock
             //Take one from par each time we hit an endblock
             //Therefore when it gets to 0 we reach the endblock our startblock relates to.
-            int par = 1;
-            int i = 0; //substring start
-            int j = 0; //substring end
+            var par = 1;
+            var i = 0; //substring start
+            var j = 0; //substring end
 
             while (i < Script.Length && Script[i] != startblock)
             {
@@ -1082,11 +1033,11 @@ namespace axScript3
         public void FirstPass()
         {
             var sb = new StringBuilder();
-            bool inStr = false;
-            bool inComment = false;
-            bool inCompStatement = false;
+            var inStr = false;
+            var inComment = false;
+            var inCompStatement = false;
             var compStateBuffer = new StringBuilder();
-            for (int i = 0; i < Script.Length - 1; i++)
+            for (var i = 0; i < Script.Length - 1; i++)
             {
                 if (Script[i] == '\n')
                 {

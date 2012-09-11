@@ -6,14 +6,12 @@ namespace axScript3
 {
     public class AxFunction
     {
-        public bool FixedParams;
+        public readonly bool FixedParams;
         public string InnerFunction;
-        public int ParamCount;
-        public string[] Parameters;
-        public string Prefix;
-        public Dictionary<String, Tuple<String, int>> Tags = new Dictionary<String, Tuple<String, int>>();
-
-        // gets ~[ ] declarations.
+        public readonly int ParamCount;
+        public readonly string[] Parameters;
+        public readonly string Prefix;
+        public readonly Dictionary<String, Tuple<String, int>> Tags = new Dictionary<String, Tuple<String, int>>();
 
         public AxFunction(string[] parameters, string function, string prefix, bool fixedParams = true)
         {
@@ -24,33 +22,36 @@ namespace axScript3
             Prefix = prefix;
         }
 
+        /// <summary>
+        /// Populates Tag array with all ~[] tags in the function body.
+        /// </summary>
         public void GetDynamicTags()
         {
-            for (int i = InnerFunction.Length - 1; i > 0; i--)
+            for (var i = InnerFunction.Length - 1; i > 0; i--)
             {
                 if (InnerFunction[i] == '[' && InnerFunction[i - 1] == '~')
                 {
-                    Tuple<string, int> extr = AxInterpreter.Extract(InnerFunction.Substring(i), '[', ']');
-                    string Tag = extr.Item1;
-                    int Length = extr.Item2;
+                    var extr = AxInterpreter.Extract(InnerFunction.Substring(i), '[', ']');
+                    var tag = extr.Item1;
+                    var length = extr.Item2;
                     //Console.WriteLine (Tag);
-                    InnerFunction = InnerFunction.Remove(i - 1, Length + 2);
+                    InnerFunction = InnerFunction.Remove(i - 1, length + 2);
 
-                    var Keys = new List<String>();
-                    Keys.AddRange(Tags.Keys);
-                    foreach (string a in Keys)
+                    var keys = new List<String>();
+                    keys.AddRange(Tags.Keys);
+                    foreach (var a in keys)
                     {
-                        Tags[a] = new Tuple<string, int>(Tags[a].Item1, Tags[a].Item2 - Length - 2);
+                        Tags[a] = new Tuple<string, int>(Tags[a].Item1, Tags[a].Item2 - length - 2);
                     }
 
-                    int spaceIndex = Tag.IndexOf(' ');
+                    var spaceIndex = tag.IndexOf(' ');
                     if (spaceIndex == -1)
                     {
-                        Tags.Add(Tag, new Tuple<String, int>("", i));
+                        Tags.Add(tag, new Tuple<String, int>("", i));
                     }
                     else
                     {
-                        Tags.Add(Tag.Substring(0, spaceIndex), new Tuple<String, int>(Tag.Substring(spaceIndex + 1, Tag.Length - spaceIndex - 1), i));
+                        Tags.Add(tag.Substring(0, spaceIndex), new Tuple<String, int>(tag.Substring(spaceIndex + 1, tag.Length - spaceIndex - 1), i));
                     }
                 }
             }
@@ -63,7 +64,7 @@ namespace axScript3
             var a = new StringBuilder("Func: ");
             a.Append(InnerFunction);
             a.Append(" | Params: ");
-            foreach (string b in Parameters)
+            foreach (var b in Parameters)
             {
                 a.Append(b);
                 a.Append(" ");
@@ -80,7 +81,7 @@ namespace axScript3
         public T Call<T>(AxInterpreter caller, object[] Params)
         {
             var rps = new Dictionary<string, object>();
-            for (int i = 0; i < Parameters.Length; i++)
+            for (var i = 0; i < Parameters.Length; i++)
             {
                 rps.Add(Parameters[i], Params[i]);
             }
@@ -101,17 +102,13 @@ namespace axScript3
             {
                 Params = new Dictionary<string, object>();
             }
-            bool done = false;
-            for (int i = 0; i < InnerFunction.Length; i++)
+            var done = false;
+            for (var i = 0; i < InnerFunction.Length; i++)
             {
-                Tuple<string, int> inner = AxInterpreter.Extract(InnerFunction.Substring(i));
-
-                int offset = 0;
+                var inner = AxInterpreter.Extract(InnerFunction.Substring(i));
                 while (inner.Item1.StartsWith("("))
                 {
                     inner = AxInterpreter.Extract(inner.Item1);
-
-                    //offset += 2;
                 }
                 if (inner.Item2 < 0)
                 {
@@ -122,18 +119,11 @@ namespace axScript3
                     break;
                 }
 
-                i += inner.Item2 + offset;
+                i += inner.Item2;
                 caller.CallFuncFromString(inner.Item1, Params);
             }
 
-            if (Params.ContainsKey(caller.Prefix + "return"))
-            {
-                return Params[caller.Prefix + "return"];
-            }
-            else
-            {
-                return null;
-            }
+            return Params.ContainsKey(caller.Prefix + "return") ? Params[caller.Prefix + "return"] : null;
         }
     }
 }

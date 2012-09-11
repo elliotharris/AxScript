@@ -8,10 +8,10 @@ namespace axScript3
     public class NetFunction
     {
         public readonly bool HasParamArray;
-        public ParameterInfo[] Inputs;
-        public MethodBase Method;
+        public readonly ParameterInfo[] Inputs;
+        public readonly MethodBase Method;
         public Type Output;
-        public object Target;
+        public readonly object Target;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="axScript3.NetFunction"/> class.
@@ -37,7 +37,7 @@ namespace axScript3
             {
                 if (HasParamArray)
                 {
-                    int lastParamPosition = Inputs.Length - 1;
+                    var lastParamPosition = Inputs.Length - 1;
 
                     var realParams = new object[Inputs.Length];
                     for (int i = 0; i < lastParamPosition; i++)
@@ -60,10 +60,10 @@ namespace axScript3
                 // Add in defaults
                 if (input.Length < Inputs.Length)
                 {
-                    IEnumerable<ParameterInfo> optInputs = from a in Inputs where a.IsOptional select a;
-                    int i = Inputs.Length - input.Length;
-                    List<object> inps = input.ToList();
-                    foreach (ParameterInfo b in optInputs)
+                    var optInputs = from a in Inputs where a.IsOptional select a;
+                    var i = Inputs.Length - input.Length;
+                    var inps = input.ToList();
+                    foreach (var b in optInputs)
                     {
                         if (i > 0)
                         {

@@ -6,11 +6,10 @@ using axScript3;
 
 namespace axScript3Console
 {
-    internal class MainClass
+    internal static class MainClass
     {
         public static void Main(string[] args)
         {
-            AxInterpreter ax = null;
             //try
             //{
             Console.WriteLine("AxScript 3 Console");
@@ -22,19 +21,16 @@ namespace axScript3Console
             {
                 throw new Exception("Invalid options specified");
             }
-
-            //Console.WriteLine(consoleOptions.Script);
-
-            string script = File.ReadAllText(consoleOptions.Script);
-            string dir = Path.GetDirectoryName(consoleOptions.Script);
-            ax = new AxInterpreter(consoleOptions.Debug);
+            var script = File.ReadAllText(consoleOptions.Script);
+            var dir = Path.GetDirectoryName(consoleOptions.Script);
+            var ax = new AxInterpreter(consoleOptions.Debug);
             if (consoleOptions.Timing)
             {
                 long elapsedTotal = 0;
                 int times = consoleOptions.Time;
                 while (times > 0)
                 {
-                    Stopwatch s = Stopwatch.StartNew();
+                    var s = Stopwatch.StartNew();
                     ax.Run(script, dir);
                     s.Stop();
                     Console.ForegroundColor = ConsoleColor.Magenta;

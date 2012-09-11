@@ -90,7 +90,8 @@ namespace axScript3
 
         public T Call<T>(AxInterpreter caller, Dictionary<String, object> Params)
         {
-            object r = Call(caller, Params);
+            var r = Call(caller, Params);
+            if (r == null) return default(T);
             return (T) r;
         }
 

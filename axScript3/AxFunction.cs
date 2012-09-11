@@ -20,7 +20,7 @@ namespace axScript3
 			{
 				if(InnerFunction[i] == '[' && InnerFunction[i-1] == '~')
 				{
-					var extr = AxInterpreter.extract(InnerFunction.Substring(i), '[', ']');	
+					var extr = AxInterpreter.Extract(InnerFunction.Substring(i), '[', ']');	
 					var Tag = extr.Item1;
 					var Length = extr.Item2;
 					//Console.WriteLine (Tag);
@@ -101,12 +101,12 @@ namespace axScript3
 			bool done = false;
 			for(int i = 0; i < InnerFunction.Length; i++)
 			{
-				var inner = AxInterpreter.extract(InnerFunction.Substring(i));
+				var inner = AxInterpreter.Extract(InnerFunction.Substring(i));
 				
 				int offset = 0;
 				while(inner.Item1.StartsWith("("))
 				{
-					inner = AxInterpreter.extract(inner.Item1);
+					inner = AxInterpreter.Extract(inner.Item1);
 					
 					//offset += 2;
 				}

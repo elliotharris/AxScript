@@ -11,7 +11,7 @@ namespace axScript3
 		public ParameterInfo[] Inputs;
 		public Type Output;
 		public object Target;
-		bool hasParams;
+	    public readonly bool HasParamArray;
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="axScript3.NetFunction"/> class.
@@ -28,14 +28,14 @@ namespace axScript3
 			Inputs = function.GetParameters();
 			Output = function.GetType();
 			Target = target;
-			hasParams = Inputs.Length > 0 && Inputs[Inputs.Length - 1].GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0;
+			HasParamArray = Inputs.Length > 0 && Inputs[Inputs.Length - 1].GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0;
 		}
 		
 		public object Call(params object[] input)
 		{
 			try
 			{
-				if (hasParams)
+				if (HasParamArray)
 				{
 					int lastParamPosition = Inputs.Length - 1;
 		

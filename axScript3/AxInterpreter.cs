@@ -231,7 +231,7 @@ namespace axScript3
 				    {
 					    Script = scriptText + "\n";
 					    FirstPass();
-					    getFunctions();
+					    GetFunctions();
 					    if (enter && EntryPoint == null) throw new AxException(this, "No entry point found.");
 					    first = false;
 				    }
@@ -320,7 +320,7 @@ namespace axScript3
 				}
 				catch (Exception)
 				{
-					throw new AxException(this, "Parameter count missmatch while calling: \"" + func + "\\");
+					throw new AxException(this, "Parameter count mismatch while calling: \"" + func + "\\");
 				}
 				var ret = AxFunc.Call(this, Params);
 				return ret;
@@ -468,13 +468,13 @@ namespace axScript3
 			}
 			else if (funcString[start] == '(') // Function call
 			{
-				var param = extract(funcString.Substring(start));
+				var param = Extract(funcString.Substring(start));
 				parameters.Add(CallFuncFromString(param.Item1, Params));
 				end = start + param.Item2;
 			}
 			else if (funcString[start] == '{') // Lambda
 			{
-				var extr = extract(funcString.Substring(start), '{', '}');
+				var extr = Extract(funcString.Substring(start), '{', '}');
 				string func = extr.Item1;
 				var _parameters = new string[0];
 				int paramindex = 0;
@@ -498,7 +498,7 @@ namespace axScript3
 			}
 			else if (funcString[start] == '%') // Return Lambda
 			{
-				var extr = extract(funcString.Substring(start + 1), '{', '}');
+				var extr = Extract(funcString.Substring(start + 1), '{', '}');
 				string func = extr.Item1;
 				string[] _parameters = new string[0];
 				int paramindex = 0;
@@ -522,7 +522,7 @@ namespace axScript3
 			}
 			else if (funcString[start] == '[') // Range
 			{
-				var extr = extract(funcString.Substring(start), '[', ']');
+				var extr = Extract(funcString.Substring(start), '[', ']');
 				var str = extr.Item1;
 
 				if (str.IndexOf(',') != -1)
@@ -775,13 +775,13 @@ namespace axScript3
 			Global,
 		}
 		
-		protected void getFunctions()
+		protected void GetFunctions()
 		{
 			for(int i = 0; i < Script.Length; i++)
 			{
 				if(Script[i] == '~' && Script[i+1] == '(')
 				{
-					var func = extract(Script.Substring(i));
+					var func = Extract(Script.Substring(i));
 					if(func.Item2 != -1)
 					{
 						
@@ -828,12 +828,12 @@ namespace axScript3
 		#endregion
 
 		#region Helper Functions
-		public static Tuple<string, int> extract(string Script)
+		public static Tuple<string, int> Extract(string Script)
 		{
-			return extract(Script, '(', ')');
+			return Extract(Script, '(', ')');
 		}
 		
-		public static Tuple<string, int> extract(string Script, char startblock, char endblock, bool escapeCounts=false)
+		public static Tuple<string, int> Extract(string Script, char startblock, char endblock, bool escapeCounts=false)
 		{
 			//Add one to par each time we hit a startblock
 			//Take one from par each time we hit an endblock
@@ -936,11 +936,11 @@ namespace axScript3
 			switch (statement)
 			{
 				case "module":
-			        f = GetPath(p);
+			        f = ConvertToRealPath(p);
 					AxModuleLoader.Load(this, f);
 					break;
 				case "include":
-			        f = GetPath(p);
+			        f = ConvertToRealPath(p);
 					Run(File.ReadAllText(Path.GetFullPath(f)), Path.GetDirectoryName(f), false);
 					break;
 				default:
@@ -948,7 +948,7 @@ namespace axScript3
 			}
 		}
 
-        private string GetPath(String inp)
+        public string ConvertToRealPath(String inp)
         {
             if (inp[0] == '"' || inp[0] == '<')
             {

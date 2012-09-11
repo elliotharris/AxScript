@@ -68,9 +68,9 @@ namespace axScript3
             }
         }
 
-        public void AddStaticFunction(string AxName, string Func, Type _type)
+        public void AddStaticFunction(string axName, string func, Type type)
         {
-            RegisterFunction(AxName, new NetFunction(_type.GetMethod(Func)));
+            RegisterFunction(axName, new NetFunction(type.GetMethod(func)));
         }
 
         // DEPRECIATED - isset now static and works on function pointers.
@@ -146,14 +146,14 @@ namespace axScript3
         }
 
 
-        public bool And(params AxFunction[] Bools)
+        public bool And(params AxFunction[] bools)
         {
-            return Bools.All(a => (bool) a.Call(this, null));
+            return bools.All(a => (bool) a.Call(this, null));
         }
 
-        public bool Or(params AxFunction[] Bools)
+        public bool Or(params AxFunction[] bools)
         {
-            return Bools.Any(a => (bool) a.Call(this, null));
+            return bools.Any(a => (bool) a.Call(this, null));
         }
 
         public bool Not(AxFunction input)
@@ -339,7 +339,7 @@ namespace axScript3
                 //Params.Add("return", null); // default return;
                 try
                 {
-                    for (int i = 0; i < paramC; i++)
+                    for (var i = 0; i < paramC; i++)
                     {
                         if (axFunc.Parameters[i] != "...")
                         {
@@ -357,7 +357,7 @@ namespace axScript3
 
             if (SharpFunctions.ContainsKey(func))
             {
-                object ret = SharpFunctions[func].Call(parameters.ToArray());
+                var ret = SharpFunctions[func].Call(parameters.ToArray());
                 return ret;
             }
 
@@ -574,7 +574,7 @@ namespace axScript3
             {
                 case '(':
                     {
-                        Tuple<string, int> param = Extract(funcString.Substring(start));
+                        var param = Extract(funcString.Substring(start));
                         parameters.Add(CallFuncFromString(param.Item1, Params));
                         end = start + param.Item2;
                     }
@@ -716,20 +716,13 @@ namespace axScript3
                         {
                             end = funcString.Length;
                         }
-                        int locindex = funcString.IndexOf("[", start, end - start);
-                        int loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
+                        var locindex = funcString.IndexOf("[", start, end - start);
+                        var loc2index = funcString.IndexOf(".", start + 1, end - start - 1);
                         if (loc2index != -1 && loc2index < locindex)
                         {
                             locindex = loc2index;
                         }
-                        if (locindex != -1)
-                        {
-                            varName = funcString.Substring(start, locindex - start);
-                        }
-                        else
-                        {
-                            varName = funcString.Substring(start, end - start);
-                        }
+                        varName = locindex != -1 ? funcString.Substring(start, locindex - start) : funcString.Substring(start, end - start);
                         varName = Prefix + varName;
                         var var = GetVar(varName, Params);
                         ExtrapolateVariable(funcString, end, ref var, ref locindex);
@@ -830,7 +823,7 @@ namespace axScript3
                     var Enum = ((IEnumerable) Var).GetEnumerator();
                     Enum.MoveNext();
 
-                    for (int i = 0; i < indexer; i++)
+                    for (var i = 0; i < indexer; i++)
                     {
                         if (!Enum.MoveNext())
                         {
@@ -856,10 +849,10 @@ namespace axScript3
                     {
                         locIndexEnd = end; //hit the end
                     }
-                    string indexerStr = funcString.Substring(locindex + 1, locIndexEnd - locindex - 1);
-                    Type t = Var.GetType();
+                    var indexerStr = funcString.Substring(locindex + 1, locIndexEnd - locindex - 1);
+                    var t = Var.GetType();
 
-                    dynamic prop = t.GetField(indexerStr) ?? (dynamic) t.GetProperty(indexerStr);
+                    var prop = t.GetField(indexerStr) ?? (dynamic) t.GetProperty(indexerStr);
 
                     Var = prop.GetValue(Var);
                     locindex = locIndexEnd;
@@ -910,14 +903,14 @@ namespace axScript3
             return nums;
         }
 
-        protected object GetVar(string Variable, Dictionary<string, object> Local)
+        protected object GetVar(string variable, Dictionary<string, object> local)
         {
             var varType = VariableType.Null;
-            if (Local.ContainsKey(Variable))
+            if (local.ContainsKey(variable))
             {
                 varType = VariableType.Local;
             }
-            else if (Variables.ContainsKey(Variable))
+            else if (Variables.ContainsKey(variable))
             {
                 varType = VariableType.Global;
             }
@@ -925,13 +918,13 @@ namespace axScript3
             switch (varType)
             {
                 case VariableType.Global:
-                    Var = Variables[Variable];
+                    Var = Variables[variable];
                     break;
                 case VariableType.Local:
-                    Var = Local[Variable];
+                    Var = local[variable];
                     break;
                 default:
-                    throw new AxException(this, String.Format("Variable \"{0}\" not found.", Variable));
+                    throw new AxException(this, String.Format("Variable \"{0}\" not found.", variable));
             }
 
             return Var;
@@ -939,45 +932,45 @@ namespace axScript3
 
         protected void GetFunctions()
         {
-            for (int i = 0; i < Script.Length; i++)
+            for (var i = 0; i < Script.Length; i++)
             {
                 if (Script[i] == '~' && Script[i + 1] == '(')
                 {
-                    Tuple<string, int> func = Extract(Script.Substring(i));
+                    var func = Extract(Script.Substring(i));
                     if (func.Item2 != -1)
                     {
-                        string FunctionString = func.Item1;
+                        var FunctionString = func.Item1;
 
-                        int indexOfColon = FunctionString.IndexOf(':');
-                        int indexOfParenthesis = FunctionString.IndexOf('(');
-                        int indexOfPeriod = FunctionString.IndexOf('|');
+                        var indexOfColon = FunctionString.IndexOf(':');
+                        var indexOfParenthesis = FunctionString.IndexOf('(');
+                        var indexOfPeriod = FunctionString.IndexOf('|');
 
-                        string FunctionName = FunctionString.Substring(0, indexOfColon);
+                        var functionName = FunctionString.Substring(0, indexOfColon);
                         //Console.WriteLine (FunctionName);
-                        string[] FunctionParameters;
-                        string FunctionContents;
+                        string[] functionParameters;
+                        string functionContents;
                         if (indexOfPeriod != -1 && indexOfParenthesis > indexOfPeriod)
                         {
-                            FunctionParameters = FunctionString.Substring(indexOfColon + 1, indexOfPeriod - indexOfColon - 1).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(x => Prefix + x).ToArray();
-                            FunctionContents = FunctionString.Substring(indexOfPeriod + 1);
+                            functionParameters = FunctionString.Substring(indexOfColon + 1, indexOfPeriod - indexOfColon - 1).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(x => Prefix + x).ToArray();
+                            functionContents = FunctionString.Substring(indexOfPeriod + 1);
                         }
                         else
                         {
-                            FunctionParameters = new string[0];
-                            FunctionContents = FunctionString.Substring(indexOfParenthesis);
+                            functionParameters = new string[0];
+                            functionContents = FunctionString.Substring(indexOfParenthesis);
                         }
-                        bool FunctionFixedParams = !FunctionParameters.Contains("...");
-                        var AxFunc = new AxFunction(FunctionParameters, FunctionContents, Prefix, FunctionFixedParams);
-                        AxFunc.GetDynamicTags();
-                        Functions.Add(Prefix + FunctionName, AxFunc);
-                        if (AxFunc.Tags.ContainsKey("EntryPoint"))
+                        var functionFixedParams = !functionParameters.Contains("...");
+                        var axFunc = new AxFunction(functionParameters, functionContents, Prefix, functionFixedParams);
+                        axFunc.GetDynamicTags();
+                        Functions.Add(Prefix + functionName, axFunc);
+                        if (axFunc.Tags.ContainsKey("EntryPoint"))
                         {
-                            EntryPoint = FunctionName;
+                            EntryPoint = functionName;
                         }
 
-                        foreach (var t in AxFunc.Tags.Where(t => Hooks.ContainsKey(t.Key)))
+                        foreach (var t in axFunc.Tags.Where(t => Hooks.ContainsKey(t.Key)))
                         {
-                            Hooks[t.Key].Call(this, AxFunc);
+                            Hooks[t.Key].Call(this, axFunc);
                         }
 
                         i += func.Item2;
@@ -1045,8 +1038,8 @@ namespace axScript3
                     if (inCompStatement)
                     {
                         inCompStatement = false;
-                        string str = compStateBuffer.ToString();
-                        int split = str.IndexOf(' ');
+                        var str = compStateBuffer.ToString();
+                        var split = str.IndexOf(' ');
                         if (split != -1)
                         {
                             ParseCompilerStatement(str.Substring(0, split), str.Substring(split + 1));
@@ -1065,7 +1058,7 @@ namespace axScript3
                     {
                         if (Script[i] != '/')
                         {
-                            inStr = inStr ? false : true;
+                            inStr = !inStr;
                         }
                     }
                     if (!inStr)
@@ -1117,8 +1110,6 @@ namespace axScript3
                     f = ConvertToRealPath(p);
                     Run(File.ReadAllText(Path.GetFullPath(f)), Path.GetDirectoryName(f), false);
                     break;
-                default:
-                    break;
             }
         }
 
@@ -1126,7 +1117,7 @@ namespace axScript3
         {
             if (inp[0] == '"' || inp[0] == '<')
             {
-                string f = inp.Substring(1, inp.Length - 2);
+                var f = inp.Substring(1, inp.Length - 2);
 
                 if (inp[0] == '"')
                 {
@@ -1139,12 +1130,7 @@ namespace axScript3
 
         public static bool IsNewLine(char c)
         {
-            if (c == '\n' || c == '\r')
-            {
-                return true;
-            }
-
-            return false;
+            return c == '\n' || c == '\r';
         }
 
         #endregion

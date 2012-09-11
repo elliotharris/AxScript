@@ -4,6 +4,8 @@
 _ReSharper.*
 *.ReSharper.*
 *.resharper.*
+*.cache*
+.DS_Store
 
 # mstest test results
 TestResults

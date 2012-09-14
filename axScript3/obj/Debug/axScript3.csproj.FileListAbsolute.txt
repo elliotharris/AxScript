@@ -2,3 +2,4 @@ C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3\bin\Debu
 C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3\bin\Debug\axScript3.pdb
 C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3\obj\Debug\axScript3.dll
 C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3\obj\Debug\axScript3.pdb
+C:\Users\Blam\Documents\Visual Studio 2010\Projects\axScript3\axScript3\obj\Debug\axScript3.csprojResolveAssemblyReference.cache

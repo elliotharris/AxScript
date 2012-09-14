@@ -264,7 +264,7 @@ namespace axScript3
             _runPathStack.Pop();
         }
 
-        public object CallFunction(String func, List<object> parameters, Dictionary<string, object> locals)
+        private object CallFunction(String func, List<object> parameters, Dictionary<string, object> locals)
         {
             CallStack.Add(func);
 
@@ -864,7 +864,7 @@ namespace axScript3
             }
         }
 
-        public IEnumerable<int> CreateRange(int start, int end, int difference = 1)
+        private IEnumerable<int> CreateRange(int start, int end, int difference = 1)
         {
             var nums = new List<int>();
             if (difference == 1)
@@ -903,7 +903,7 @@ namespace axScript3
             return nums;
         }
 
-        protected object GetVar(string variable, Dictionary<string, object> local)
+        private object GetVar(string variable, Dictionary<string, object> local)
         {
             var varType = VariableType.Null;
             if (local.ContainsKey(variable))
@@ -930,7 +930,7 @@ namespace axScript3
             return Var;
         }
 
-        protected void GetFunctions()
+        private void GetFunctions()
         {
             for (var i = 0; i < Script.Length; i++)
             {
@@ -939,25 +939,25 @@ namespace axScript3
                     var func = Extract(Script.Substring(i));
                     if (func.Item2 != -1)
                     {
-                        var FunctionString = func.Item1;
+                        var functionString = func.Item1;
 
-                        var indexOfColon = FunctionString.IndexOf(':');
-                        var indexOfParenthesis = FunctionString.IndexOf('(');
-                        var indexOfPeriod = FunctionString.IndexOf('|');
+                        var indexOfColon = functionString.IndexOf(':');
+                        var indexOfParenthesis = functionString.IndexOf('(');
+                        var indexOfPeriod = functionString.IndexOf('|');
 
-                        var functionName = FunctionString.Substring(0, indexOfColon);
+                        var functionName = functionString.Substring(0, indexOfColon);
                         //Console.WriteLine (FunctionName);
                         string[] functionParameters;
                         string functionContents;
                         if (indexOfPeriod != -1 && indexOfParenthesis > indexOfPeriod)
                         {
-                            functionParameters = FunctionString.Substring(indexOfColon + 1, indexOfPeriod - indexOfColon - 1).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(x => Prefix + x).ToArray();
-                            functionContents = FunctionString.Substring(indexOfPeriod + 1);
+                            functionParameters = functionString.Substring(indexOfColon + 1, indexOfPeriod - indexOfColon - 1).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(x => Prefix + x).ToArray();
+                            functionContents = functionString.Substring(indexOfPeriod + 1);
                         }
                         else
                         {
                             functionParameters = new string[0];
-                            functionContents = FunctionString.Substring(indexOfParenthesis);
+                            functionContents = functionString.Substring(indexOfParenthesis);
                         }
                         var functionFixedParams = !functionParameters.Contains("...");
                         var axFunc = new AxFunction(functionParameters, functionContents, Prefix, functionFixedParams);
@@ -1023,7 +1023,7 @@ namespace axScript3
             }
         }
 
-        public void FirstPass()
+        private void FirstPass()
         {
             var sb = new StringBuilder();
             var inStr = false;
@@ -1147,19 +1147,19 @@ namespace axScript3
 
         public event ScriptEndEvent ScriptError;
 
-        public bool OnScriptError(Exception e)
+        private bool OnScriptError(Exception e)
         {
             return ScriptError == null || ScriptError(e);
         }
 
         public event ScriptEndEvent ScriptEnd;
 
-        public bool OnScriptEnd(Exception e)
+        private bool OnScriptEnd(Exception e)
         {
             return ScriptEnd == null || ScriptEnd(e);
         }
 
-        public void AddDefault()
+        private void AddDefault()
         {
             Variables.Add(Prefix + "null", null);
             Variables.Add(Prefix + "true", true);

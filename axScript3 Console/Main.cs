@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using CommandLine;
 using axScript3;
 
@@ -12,8 +13,6 @@ namespace axScript3Console
         {
             //try
             //{
-            Console.WriteLine("AxScript 3 Console");
-            Console.WriteLine("^^^^^^^^ ^ ^^^^^^^");
 
             var consoleOptions = new ConsoleOptions();
             var parser = new CommandLineParser();
@@ -24,6 +23,8 @@ namespace axScript3Console
             var script = File.ReadAllText(consoleOptions.Script);
             var dir = Path.GetDirectoryName(consoleOptions.Script);
             var ax = new AxInterpreter(consoleOptions.Debug);
+
+            if (consoleOptions.Debug) Console.WriteLine("axScript {0}", Assembly.GetExecutingAssembly().GetName().Version);
             if (consoleOptions.Timing)
             {
                 long elapsedTotal = 0;

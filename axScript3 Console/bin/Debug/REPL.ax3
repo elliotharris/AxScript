@@ -1,46 +1,47 @@
-//REPL Script 1.0
+//REPL Script 1.1
 
-#module <Ax/STD.dll>
-#module <Ax/Exit.dll>
+#module <Ax/STD.dll>  // Needed for console output
+#module <Ax/Exit.dll> // Needed for exit hook
 
+// Exit Handler function.
+// Whenever the script is stopped this function is called.
+// It can be used to catch errors and continue the script.
 ~(exit: type error |
 	(
 		~[ExitPoint]
 		
 		(set ^err error)
 		
-		(ifelse (eq type #EXITCODE_ERROR) {
-			// Error
-			(set ^err (string err))
-			(set ^pos (err:IndexOf "--->"))
-			(set ^pos (err:IndexOf "--->" (add pos 1)))
-			(set ^pos (err:IndexOf "--->" (add pos 1)))
-			(set ^endp (err:IndexOf "at" pos))
-			
-			(set ^err (err:Substring (add pos 5) (sub endp pos 10)))
-			
-			(if (eq err "System.Reflection.Target") {
-				(set ^err "Invalid parameter type")
-			})
+		// All the reflection causes exceptions to go a bit crazy.
+		// So we loop through all the inner exceptions to find
+		//  the root cause of the error.
+		(while %{neq err.InnerException null} {
+			(set ^err err.InnerException)
+		})
 		
-			(printl "# {0}\n\n" err)
-			(return false) // Keep it running.
+		(ifelse (eq type #EXITCODE_ERROR) {		
+			(printl "# {0}\n\n" err.Message)
+			(return false) // Returning false means it keeps running
 		} {
-			// Clean exit
+			// Clean exit, no need to return anything.
 			(printl "Goodbye.")
 		})
 	)
 )
 
+// Where our script starts.
+// Sets up the title and begins the loop.
 ~(main: args |
 	(
 		~[EntryPoint]
 		
-		(consoletitle "axScript REPL 1.0")
+		(consoletitle "axScript REPL 1.1")
 		(loop)
 	)
 )
 
+// Our Read Eval Print Loop!
+// Exits on blank lines
 ~(loop: 
 	(	
 		(set ^quit false)

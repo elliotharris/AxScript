@@ -52,11 +52,7 @@
 			(ifelse (eq inp.Length 0) {
 				(set ^quit true)
 			} {
-				(ifelse (eq inp "loop") {
-					(printl "Yo dawg")
-				} {
-					(printl "{0}" (run inp))
-				})
+				(printl "{0}" (run inp))
 			})
 		} %{eq quit false})
 	)

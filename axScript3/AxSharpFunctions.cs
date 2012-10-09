@@ -7,31 +7,31 @@ namespace axScript3
     {
         public static Dictionary<String, NetFunction> AddBaseFunctions()
         {
-            var funcs = new Dictionary<String, NetFunction>();
-
-            funcs.Add("add", GetFunc("Add"));
-            funcs.Add("+", GetFunc("Add"));
-            funcs.Add("sub", GetFunc("Subtract"));
-            funcs.Add("-", GetFunc("Subtract"));
-            funcs.Add("div", GetFunc("Divide"));
-            funcs.Add("/", GetFunc("Divide"));
-            funcs.Add("mult", GetFunc("Multiply"));
-            funcs.Add("*", GetFunc("Multiply"));
-            funcs.Add("double", GetFunc("ToDouble"));
-            funcs.Add("int", GetFunc("ToInt"));
-            funcs.Add("string", GetFunc("_ToString"));
-            funcs.Add("lt", GetFunc("LessThan"));
-            funcs.Add("<", GetFunc("LessThan"));
-            funcs.Add("gt", GetFunc("GreaterThan"));
-            funcs.Add(">", GetFunc("LessThan"));
-            funcs.Add("eq", GetFunc("EqualTo"));
-            funcs.Add("==", GetFunc("LessThan"));
-            funcs.Add("neq", GetFunc("NotEqualTo"));
-            funcs.Add("!=", GetFunc("LessThan"));
-            funcs.Add("scope", GetFunc("ReturnScope"));
-            funcs.Add("isset", GetFunc("IsPointerValid"));
-            funcs.Add("??", GetFunc("IsPointerValid"));
-            funcs.Add("type", GetFunc("TypeOf"));
+            var funcs = new Dictionary<String, NetFunction>
+                {
+                    {"add", GetFunc("Add")}, 
+                    {"+", GetFunc("Add")}, 
+                    {"sub", GetFunc("Subtract")}, 
+                    {"-", GetFunc("Subtract")}, 
+                    {"div", GetFunc("Divide")}, 
+                    {"/", GetFunc("Divide")}, 
+                    {"mult", GetFunc("Multiply")}, 
+                    {"*", GetFunc("Multiply")}, 
+                    {"double", GetFunc("ToDouble")}, 
+                    {"int", GetFunc("ToInt")}, 
+                    {"lt", GetFunc("LessThan")}, 
+                    {"<", GetFunc("LessThan")}, 
+                    {"gt", GetFunc("GreaterThan")}, 
+                    {">", GetFunc("GreaterThan")}, 
+                    {"eq", GetFunc("EqualTo")}, 
+                    {"==", GetFunc("EqualTo")}, 
+                    {"neq", GetFunc("NotEqualTo")}, 
+                    {"!=", GetFunc("NotEqualTo")}, 
+                    {"scope", GetFunc("ReturnScope")}, 
+                    {"isset", GetFunc("IsPointerValid")}, 
+                    {"??", GetFunc("IsPointerValid")}, 
+                    {"type", GetFunc("TypeOf")}
+                };
 
             return funcs;
         }
@@ -45,42 +45,42 @@ namespace axScript3
 
         #region Maths
 
-        public static dynamic Add(dynamic a, params dynamic[] Parameters)
+        public static dynamic Add(dynamic a, params dynamic[] parameters)
         {
-            for (int i = 0; i < Parameters.Length; i++)
+            for (var i = 0; i < parameters.Length; i++)
             {
-                a += Parameters[i];
+                a += parameters[i];
             }
 
             return a;
         }
 
 
-        public static dynamic Subtract(dynamic a, params dynamic[] Parameters)
+        public static dynamic Subtract(dynamic a, params dynamic[] parameters)
         {
-            for (int i = 0; i < Parameters.Length; i++)
+            for (var i = 0; i < parameters.Length; i++)
             {
-                a -= Parameters[i];
+                a -= parameters[i];
             }
 
             return a;
         }
 
-        public static dynamic Multiply(dynamic a, params dynamic[] Parameters)
+        public static dynamic Multiply(dynamic a, params dynamic[] parameters)
         {
-            for (int i = 0; i < Parameters.Length; i++)
+            for (var i = 0; i < parameters.Length; i++)
             {
-                a *= Parameters[i];
+                a *= parameters[i];
             }
 
             return a;
         }
 
-        public static dynamic Divide(dynamic a, params dynamic[] Parameters)
+        public static dynamic Divide(dynamic a, params dynamic[] parameters)
         {
-            for (int i = 0; i < Parameters.Length; i++)
+            for (var i = 0; i < parameters.Length; i++)
             {
-                a /= Parameters[i];
+                a /= parameters[i];
             }
 
             return a;
@@ -141,7 +141,7 @@ namespace axScript3
 
         public static bool IsPointerValid(AxVariablePtr ptr)
         {
-            return ptr.Type == AxInterpreter.VariableType.Null ? false : true;
+            return ptr.Type != AxInterpreter.VariableType.Null;
         }
 
         #endregion
@@ -155,14 +155,7 @@ namespace axScript3
 
         public static int ArrayCount(object inp)
         {
-            if (inp.GetType() == typeof (String))
-            {
-                return ((String) inp).Length;
-            }
-            else
-            {
-                return ((List<object>) inp).Count;
-            }
+            return inp is string ? ((String) inp).Length : ((List<object>) inp).Count;
         }
 
         public static void ArrayRemove(List<object> Array, params object[] Values)
@@ -193,11 +186,6 @@ namespace axScript3
         public static double ToDouble(dynamic inp)
         {
             return Convert.ToDouble(inp);
-        }
-
-        public static string _ToString(dynamic inp)
-        {
-            return inp.ToString();
         }
 
         #endregion

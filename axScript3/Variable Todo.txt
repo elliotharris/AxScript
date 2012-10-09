@@ -1,0 +1,6 @@
+x======================x
+# New Variable Storage #
+x======================x
+
+All variables stored in one Dictionary<AxVariablePtr, Object>.
+

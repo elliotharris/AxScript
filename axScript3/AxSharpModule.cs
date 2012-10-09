@@ -1,6 +1,9 @@
 namespace axScript3
 {
-    public interface AxSharpModule
+    /// <summary>
+    /// REDUNDANT
+    /// </summary>
+    public interface IAxSharpModule
     {
         void Load(AxInterpreter instance);
     }

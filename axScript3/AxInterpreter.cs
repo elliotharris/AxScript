@@ -173,6 +173,10 @@ namespace axScript3
 
         public void RegisterFunction(String name, NetFunction func)
         {
+            if(SharpFunctions.ContainsKey(name))
+            {
+                throw Error("Function with name \"{0}\" already exists. Please ensure all libraries use proper prefix notation as defined in the specification to avoid this.", name);
+            }
             SharpFunctions.Add(name, func);
         }
 
@@ -195,9 +199,9 @@ namespace axScript3
             return Variables[var];
         }
 
-        public object Array(params object[] values)
+        public object Array(params dynamic[] values)
         {
-            return new List<object>(values);
+            return new List<dynamic>(values);
         }
 
         #endregion
@@ -237,6 +241,7 @@ namespace axScript3
                         Script = scriptText + "\n";
                         FirstPass();
                         GetFunctions();
+                        // TODO: Add support for no entry point ---> run outside of a main function scope!
                         if (enter && EntryPoint == null)
                         {
                             throw new AxException(this, "No entry point found.");
@@ -264,10 +269,10 @@ namespace axScript3
             _runPathStack.Pop();
         }
 
-        private object CallFunction(String func, List<object> parameters, Dictionary<string, object> locals)
+        // TODO: Add reference counting to local variables!
+        private object CallFunction(String func, List<object> parameters, Dictionary<String, object> locals)
         {
             CallStack.Add(func);
-
             //Class Function Call
             var colonPos = func.IndexOf(':');
             if (colonPos != -1)
@@ -364,7 +369,7 @@ namespace axScript3
             throw Error("Function \"{0}\" not found!", func);
         }
 
-        public AxException Error(String message, params object[] p)
+        private AxException Error(String message, params object[] p)
         {
             if (p != null)
             {
@@ -491,6 +496,7 @@ namespace axScript3
                     j++;
                 }
 
+                //parameters.Add(new AxString(sb.ToString()));
                 parameters.Add(sb.ToString());
                 end = j + 1;
                 if (end > funcString.Length)
@@ -646,15 +652,47 @@ namespace axScript3
                             if (str.IndexOf('|') != -1)
                             {
                                 temp = str.Split('|');
-                                rangediff = int.Parse(temp[1]);
+                                if (IsDigitOrMinus(temp[1][0]))
+                                {
+                                    rangediff = int.Parse(temp[1]);
+                                }
+                                else
+                                {
+                                    rangediff = (int)GetVar(Prefix + temp[1], Params);
+                                }
                                 str = temp[0];
                             }
 
                             temp = str.Split(new[] {".."}, StringSplitOptions.RemoveEmptyEntries);
-                            var rangestart = int.Parse(temp[0]);
-                            var rangeend = int.Parse(temp[1]);
 
-                            var dbl = CreateRange(rangestart, rangeend, rangediff);
+                            var rangestartstr = temp[0];
+                            var rangeendstr = temp[1];
+                            object rangestart = 0;
+                            object rangeend = 0;
+
+                            if(IsDigitOrMinus(rangestartstr[0]))
+                            {
+                                rangestart = int.Parse(rangestartstr);
+                            }
+                            else
+                            {
+                                var s = 0;
+                                ExtrapolateVariable(rangestartstr, rangestartstr.Length, ref rangestart, ref s);
+                                rangestart = (int)GetVar(Prefix+rangestartstr, Params);
+                            }
+
+                            if (IsDigitOrMinus(rangeendstr[0]))
+                            {
+                                rangeend = int.Parse(rangeendstr);
+                            }
+                            else
+                            {
+                                var s = 0;
+                                ExtrapolateVariable(rangeendstr, rangeendstr.Length, ref rangeend, ref s);
+                                rangeend = (int)GetVar(Prefix + rangeendstr, Params);
+                            }
+
+                            var dbl = CreateRange((int)rangestart, (int)rangeend, rangediff);
 
                             parameters.Add(dbl);
                         }
@@ -804,6 +842,11 @@ namespace axScript3
             return oSpaceIndex;
         }
 
+        private static bool IsDigitOrMinus(char c)
+        {
+            return char.IsDigit(c) || c == '-';
+        }
+
         // Checks for element indexers, and loops through them all to get to the data desired.
         private void ExtrapolateVariable(String funcString, int end, ref object Var, ref int locindex)
         {
@@ -903,7 +946,7 @@ namespace axScript3
             return nums;
         }
 
-        private object GetVar(string variable, Dictionary<string, object> local)
+        private object GetVar(string variable, Dictionary<String, object> local)
         {
             var varType = VariableType.Null;
             if (local.ContainsKey(variable))
@@ -1103,7 +1146,7 @@ namespace axScript3
             switch (statement)
             {
                 case "module":
-                    f = ConvertToRealPath(p);
+                    f = ConvertToRealPath(p.Trim());
                     AxModuleLoader.Load(this, f);
                     break;
                 case "include":

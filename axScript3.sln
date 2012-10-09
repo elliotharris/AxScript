@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "axScript3", "axScript3\axScript3.csproj", "{33068CFB-AEF5-43E7-97B0-E89A96313A30}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "axScript3 Console", "axScript3 Console\axScript3 Console.csproj", "{80842320-BF8C-457A-AD07-E67FB2A752D3}"
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STD", "STD\STD.csproj", "{5AFDC534-196C-4BC6-8600-DD2D56640897}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exit", "Exit\Exit.csproj", "{465A6C7B-0A38-4FF3-8FDD-DB3884E7027B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "String", "String\String.csproj", "{4A72E09C-BDDD-428B-BACF-23408EECC184}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{465A6C7B-0A38-4FF3-8FDD-DB3884E7027B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{465A6C7B-0A38-4FF3-8FDD-DB3884E7027B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{465A6C7B-0A38-4FF3-8FDD-DB3884E7027B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A72E09C-BDDD-428B-BACF-23408EECC184}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A72E09C-BDDD-428B-BACF-23408EECC184}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A72E09C-BDDD-428B-BACF-23408EECC184}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A72E09C-BDDD-428B-BACF-23408EECC184}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

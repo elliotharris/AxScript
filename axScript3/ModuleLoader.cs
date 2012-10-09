@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace axScript3
@@ -15,21 +16,25 @@ namespace axScript3
 
             if (!i.Modules.Contains(p))
             {
-                i.Modules.Add(p);
-                String fp = Path.GetFullPath(p);
-                Assembly a = Assembly.LoadFile(fp);
-                foreach (Type t in a.GetTypes())
+                if (i.Debug)
                 {
-                    foreach (MethodInfo m in t.GetMethods())
+                    Console.WriteLine("Loading Module: \"{0}\"", p);
+                }
+                i.Modules.Add(p);
+                var fp = Path.GetFullPath(p);
+                var a = Assembly.LoadFile(fp);
+                foreach (var t in a.GetTypes())
+                {
+                    foreach (var m in t.GetMethods())
                     {
-                        foreach (object attr in m.GetCustomAttributes(true))
+                        foreach (var attr in m.GetCustomAttributes(true))
                         {
                             var axFunctionMarker = attr as ExportAx;
                             if (axFunctionMarker != null)
                             {
                                 if (i.Debug)
                                 {
-                                    Console.Write("Importing Function: '{0}'", axFunctionMarker.Name);
+                                    Console.Write("  Importing Function: '{0}'", axFunctionMarker.Name);
                                     Console.CursorLeft = 50;
                                     Console.WriteLine(axFunctionMarker.Description);
                                 }
@@ -40,7 +45,7 @@ namespace axScript3
                             {
                                 if (i.Debug)
                                 {
-                                    Console.Write("Importing Hook Tag: '{0}'", axHookMarker.Tag);
+                                    Console.Write("  Importing Hook Tag: '{0}'", axHookMarker.Tag);
                                     Console.CursorLeft = 50;
                                     Console.WriteLine(axHookMarker.Description);
                                 }
@@ -49,18 +54,13 @@ namespace axScript3
                         }
                     }
 
-                    foreach (PropertyInfo prop in t.GetProperties())
+                    foreach (var prop in t.GetProperties())
                     {
-                        foreach (object attr in prop.GetCustomAttributes(true))
+                        foreach (var axFunctionMarker in prop.GetCustomAttributes(true).OfType<ExportAx>())
                         {
-                            var axFunctionMarker = attr as ExportAx;
-                            if (axFunctionMarker == null)
-                            {
-                                continue;
-                            }
                             if (i.Debug)
                             {
-                                Console.Write("Importing Property [ReadOnly]: '{0}'", axFunctionMarker.Name);
+                                Console.Write("  Importing Property [ReadOnly]: '{0}'", axFunctionMarker.Name);
                                 Console.CursorLeft = 50;
                                 Console.WriteLine(axFunctionMarker.Description);
                             }
@@ -68,18 +68,13 @@ namespace axScript3
                         }
                     }
 
-                    foreach (FieldInfo field in t.GetFields())
+                    foreach (var field in t.GetFields())
                     {
-                        foreach (object attr in field.GetCustomAttributes(true))
+                        foreach (var axFunctionMarker in field.GetCustomAttributes(true).OfType<ExportAx>())
                         {
-                            var axFunctionMarker = attr as ExportAx;
-                            if (axFunctionMarker == null)
-                            {
-                                continue;
-                            }
                             if (i.Debug)
                             {
-                                Console.Write("Importing Field: '{0}'", axFunctionMarker.Name);
+                                Console.Write("  Importing Field: '{0}'", axFunctionMarker.Name);
                                 Console.CursorLeft = 50;
                                 Console.WriteLine(axFunctionMarker.Description);
                             }

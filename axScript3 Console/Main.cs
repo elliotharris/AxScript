@@ -11,55 +11,53 @@ namespace axScript3Console
     {
         public static void Main(string[] args)
         {
-            //try
-            //{
-
-            var consoleOptions = new ConsoleOptions();
-            var parser = new CommandLineParser();
-            if (!parser.ParseArguments(args, consoleOptions))
+            try
             {
-                throw new Exception("Invalid options specified");
-            }
-            var script = File.ReadAllText(consoleOptions.Script);
-            var dir = Path.GetDirectoryName(consoleOptions.Script);
-            var ax = new AxInterpreter(consoleOptions.Debug);
-
-            if (consoleOptions.Debug) Console.WriteLine("axScript {0}", Assembly.GetExecutingAssembly().GetName().Version);
-            if (consoleOptions.Timing)
-            {
-                long elapsedTotal = 0;
-                int times = consoleOptions.Time;
-                while (times > 0)
+                var consoleOptions = new ConsoleOptions();
+                var parser = new CommandLineParser();
+                if (!parser.ParseArguments(args, consoleOptions))
                 {
-                    var s = Stopwatch.StartNew();
-                    ax.Run(script, dir);
-                    s.Stop();
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine("Elapsed MS: {0}", s.ElapsedMilliseconds);
-                    Console.ForegroundColor = ConsoleColor.White;
-                    elapsedTotal += s.ElapsedMilliseconds;
-                    times--;
+                    throw new Exception("Invalid options specified");
                 }
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine("Average Elapsed MS: {0}", elapsedTotal/consoleOptions.Time);
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.ReadLine();
+                var script = File.ReadAllText(consoleOptions.Script);
+                var dir = Path.GetDirectoryName(consoleOptions.Script);
+                var ax = new AxInterpreter(consoleOptions.Debug);
+
+                if (consoleOptions.Debug) Console.WriteLine("axScript {0}", Assembly.GetExecutingAssembly().GetName().Version);
+                if (consoleOptions.Timing)
+                {
+                    long elapsedTotal = 0;
+                    int times = consoleOptions.Time;
+                    while (times > 0)
+                    {
+                        var s = Stopwatch.StartNew();
+                        ax.Run(script, dir);
+                        s.Stop();
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine("Elapsed MS: {0}", s.ElapsedMilliseconds);
+                        Console.ForegroundColor = ConsoleColor.White;
+                        elapsedTotal += s.ElapsedMilliseconds;
+                        times--;
+                    }
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine("Average Elapsed MS: {0}", elapsedTotal/consoleOptions.Time);
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.ReadLine();
+                }
+                else
+                {
+                    ax = new AxInterpreter(consoleOptions.Debug);
+                    ax.Run(script, dir);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ax = new AxInterpreter(consoleOptions.Debug);
-                ax.Run(script, dir);
+            	Console.ForegroundColor = ConsoleColor.Red;
+                while (ex.InnerException != null) ex = ex.InnerException;
+                Console.WriteLine("\n\n\nERROR RUNNING SCRIPT:\n\t{0}", ex.Message);
+
+                throw ex;
             }
-            //}
-            //catch (Exception ex)
-            //{
-            //	Console.ForegroundColor = ConsoleColor.Red;
-            //	Console.WriteLine("\n\n\nERROR RUNNING SCRIPT:\n\t{0}", ex.Message);
-            //	Console.Write("Call History:\n\t");
-            //	if(ax != null) ax.CallStack.ForEach(x => Console.Write("{0}, ", x));
-            //	Console.WriteLine("[error]");
-            //	Console.ReadLine();
-            //}
         }
     }
 }

@@ -1,25 +1,26 @@
-//REPL Script 1.1
+//REPL Script 1.2
 
-#module <Ax/STD.dll>  // Needed for console output
-#module <Ax/Exit.dll> // Needed for exit hook
+#module <Ax/STD>  // Needed for console output
+#module <Ax/Exit> // Needed for exit hook
+#module <Ax/String> // Load for extra functions!
+
 
 // Exit Handler function.
 // Whenever the script is stopped this function is called.
 // It can be used to catch errors and continue the script.
 ~(exit: type error |
 	(
-		~[ExitPoint]
-		
+		~[ExitPoint] // Mark this function so the <Ax/Exit> library runs it on exit.
 		(set ^err error)
 		
-		// All the reflection causes exceptions to go a bit crazy.
-		// So we loop through all the inner exceptions to find
-		//  the root cause of the error.
-		(while %{neq err.InnerException null} {
-			(set ^err err.InnerException)
-		})
-		
 		(ifelse (eq type #EXITCODE_ERROR) {		
+			// All the reflection causes exceptions to go a bit crazy.
+			// So we loop through all the inner exceptions to find
+			//  the root cause of the error.
+			(while %{neq err.InnerException null} {
+				(set ^err err.InnerException)
+			})
+			
 			(printl "# {0}\n\n" err.Message)
 			(return false) // Returning false means it keeps running
 		} {
@@ -29,13 +30,23 @@
 	)
 )
 
+~(fib: x |
+	(
+		(printl x)
+		(ifelse (lt x 2) {
+			(return x)
+		} {
+			(return (+ (fib (- x 1)) (fib (- x 2))))
+		})
+	)
+)
+
 // Where our script starts.
 // Sets up the title and begins the loop.
 ~(main: args |
 	(
 		~[EntryPoint]
-		
-		(consoletitle "axScript REPL 1.1")
+		(console>title "axScript REPL 1.1")
 		(loop)
 	)
 )
@@ -52,7 +63,17 @@
 			(ifelse (eq inp.Length 0) {
 				(set ^quit true)
 			} {
-				(printl "{0}" (run inp))
+				(set ^r (run inp))
+				(ifelse (eq r null) {
+					(printl " ")
+				} {
+					// Check to see if [r] is an array, use printarr if it is, else just printl!
+					(ifelse (eq (type r) (type (array 0))) {
+						(array>print r)
+					} {
+						(printl r)
+					})
+				})
 			})
 		} %{eq quit false})
 	)

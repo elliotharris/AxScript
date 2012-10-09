@@ -6,41 +6,37 @@ namespace STD
 {
     public static class Library
     {
-        [ExportAx("insert", "Inserts values into an array.")]
+        [ExportAx("array>insert", "Inserts values into an array.")]
         public static void ArrayInsert(List<object> array, params object[] values)
         {
             array.AddRange(values);
         }
 
         [ExportAx("length", "Returns the length of an array or string.")]
-        public static int ArrayCount(object inp)
+        public static int ArrayCount(dynamic inp)
         {
-            if (inp is string)
-            {
-                return ((String) inp).Length;
-            }
-            return ((List<object>) inp).Count;
+            return inp is string ? ((String) inp).Length : inp.Count;
         }
 
-        [ExportAx("remove", "Removes values from an array.")]
+        [ExportAx("array>remove", "Removes values from an array.")]
         public static void ArrayRemove(List<object> array, params object[] values)
         {
-            foreach (object a in values)
+            foreach (var a in values)
             {
                 array.Remove(a);
             }
         }
 
-        [ExportAx("removeat", "Removes the values at the indexes specified.")]
+        [ExportAx("array>removeat", "Removes the values at the indexes specified.")]
         public static void ArrayRemoveAt(List<object> array, params int[] indexes)
         {
-            foreach (int i in indexes)
+            foreach (var i in indexes)
             {
                 array.RemoveAt(i);
             }
         }
 
-        [ExportAx("clearconsole", "Clears the console")]
+        [ExportAx("console>clear", "Clears the console")]
         public static void ClearConsole()
         {
             Console.Clear();
@@ -62,11 +58,11 @@ namespace STD
         [ExportAx("readkey", "Reads in a single keypress")]
         public static double ReadKey(bool hide = false)
         {
-            char c = Console.ReadKey(hide).KeyChar;
+            var c = Console.ReadKey(hide).KeyChar;
             return c;
         }
 
-        [ExportAx("byte", "Converts a char to a byte.")]
+        [ExportAx("convert>byte", "Converts a char to a byte.")]
         public static byte GetByte(dynamic input)
         {
             return input is string ? (byte) input[0] : (byte) input;
@@ -92,13 +88,13 @@ namespace STD
             }
         }
 
-        [ExportAx("printarr", "Prints out all values of an enumerable")]
+        [ExportAx("array>print", "Prints out all values of an enumerable")]
         public static void PrintArray(object var)
         {
             Console.WriteLine("{0}", var.AdvToString());
         }
 
-        [ExportAx("consoletitle", "Sets title of the console window")]
+        [ExportAx("console>title", "Sets title of the console window")]
         public static void SetTitle(string title)
         {
             Console.Title = title;

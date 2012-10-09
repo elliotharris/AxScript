@@ -1,9 +1,12 @@
-﻿namespace axScript3
+﻿using System;
+
+namespace axScript3
 {
     public class AxVariablePtr
     {
-        public AxInterpreter.VariableType Type;
-        public string VariableName;
+        public readonly AxInterpreter.VariableType Type;
+        public readonly string VariableName;
+        public int Count;
 
         public AxVariablePtr(string variable, AxInterpreter.VariableType varType)
         {
@@ -13,7 +16,7 @@
 
         public override string ToString()
         {
-            return this;
+            return this.VariableName;
         }
 
         public static implicit operator string(AxVariablePtr ptr)

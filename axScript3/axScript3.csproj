@@ -35,7 +35,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AxBucket.cs" />
     <Compile Include="AxException.cs" />
+    <Compile Include="AxString.cs" />
     <Compile Include="HookAx.cs" />
     <Compile Include="ExportAx.cs" />
     <Compile Include="AxInterpreter.cs" />

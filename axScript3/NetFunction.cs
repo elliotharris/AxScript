@@ -39,14 +39,14 @@ namespace axScript3
                     var lastParamPosition = Inputs.Length - 1;
 
                     var realParams = new object[Inputs.Length];
-                    for (int i = 0; i < lastParamPosition; i++)
+                    for (var i = 0; i < lastParamPosition; i++)
                     {
                         realParams[i] = input[i];
                     }
 
-                    Type paramsType = Inputs[lastParamPosition].ParameterType.GetElementType();
-                    Array extra = Array.CreateInstance(paramsType, input.Length - lastParamPosition);
-                    for (int i = 0; i < extra.Length; i++)
+                    var paramsType = Inputs[lastParamPosition].ParameterType.GetElementType();
+                    var extra = Array.CreateInstance(paramsType, input.Length - lastParamPosition);
+                    for (var i = 0; i < extra.Length; i++)
                     {
                         extra.SetValue(input[i + lastParamPosition], i);
                     }

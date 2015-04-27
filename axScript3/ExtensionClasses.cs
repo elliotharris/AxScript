@@ -18,23 +18,23 @@ namespace axScript3
 
         public static String AdvToString<T>(this T a)
         {
-            var SB = new StringBuilder();
+            var sb = new StringBuilder();
             if (a is IEnumerable && !(a is String))
             {
-                SB.Append("{ ");
-                foreach (object b in (IEnumerable) a)
+                sb.Append("{ ");
+                foreach (var b in (IEnumerable) a)
                 {
-                    SB.Append(String.Format("{0} ", b.AdvToString()));
+                    sb.Append(String.Format("{0} ", b.AdvToString()));
                 }
-                SB.Append("}");
+                sb.Append("}");
             }
             else
 
             {
-                SB.Append(a);
+                sb.Append(a);
             }
 
-            return SB.ToString();
+            return sb.ToString();
         }
     }
 }

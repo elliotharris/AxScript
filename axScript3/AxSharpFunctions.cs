@@ -160,7 +160,7 @@ namespace axScript3
 
         public static void ArrayRemove(List<object> Array, params object[] Values)
         {
-            foreach (object a in Values)
+            foreach (var a in Values)
             {
                 Array.Remove(a);
             }
@@ -168,7 +168,7 @@ namespace axScript3
 
         public static void ArrayRemoveAt(List<object> Array, params double[] Indexes)
         {
-            foreach (double i in Indexes)
+            foreach (var i in Indexes)
             {
                 Array.RemoveAt(Convert.ToInt32(i));
             }

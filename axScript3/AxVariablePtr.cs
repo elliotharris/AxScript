@@ -14,7 +14,7 @@
 
         public override string ToString()
         {
-            return this.VariableName;
+            return VariableName;
         }
 
         public static implicit operator string(AxVariablePtr ptr)

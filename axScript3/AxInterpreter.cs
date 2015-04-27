@@ -334,7 +334,7 @@ namespace axScript3
                 if (!axFunc.FixedParams)
                 {
                     var args = new List<object>();
-                    for (int i = paramC - 1; i < parameters.Count; i++)
+                    for (var i = paramC - 1; i < parameters.Count; i++)
                     {
                         args.Add(parameters[i]);
                     }

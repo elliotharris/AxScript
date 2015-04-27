@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using CommandLine;
+﻿using CommandLine;
 
 namespace axScript3Console
 {

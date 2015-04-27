@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace axScript3
+﻿namespace axScript3
 {
     public class AxVariablePtr
     {

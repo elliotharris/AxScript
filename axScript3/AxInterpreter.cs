@@ -728,7 +728,7 @@ namespace axScript3
                             end = funcString.Length;
                         }
 
-                        string Variable = funcString.Substring(start + 1, end - start - 1);
+                        var Variable = funcString.Substring(start + 1, end - start - 1);
 
                         var varType = VariableType.Null;
                         if (Params.ContainsKey(Variable))
@@ -748,7 +748,6 @@ namespace axScript3
                 case '@':
                     {
                         start++;
-                        string varName;
                         end = funcString.IndexOf(" ", start);
                         if (end == -1)
                         {
@@ -760,7 +759,7 @@ namespace axScript3
                         {
                             locindex = loc2index;
                         }
-                        varName = locindex != -1 ? funcString.Substring(start, locindex - start) : funcString.Substring(start, end - start);
+                        var varName = locindex != -1 ? funcString.Substring(start, locindex - start) : funcString.Substring(start, end - start);
                         varName = Prefix + varName;
                         var var = GetVar(varName, Params);
                         ExtrapolateVariable(funcString, end, ref var, ref locindex);
@@ -977,51 +976,49 @@ namespace axScript3
         {
             for (var i = 0; i < Script.Length; i++)
             {
-                if (Script[i] == '~' && Script[i + 1] == '(')
+                if (Script[i] != '~' || Script[i + 1] != '(') continue;
+                var func = Extract(Script.Substring(i));
+                if (func.Item2 != -1)
                 {
-                    var func = Extract(Script.Substring(i));
-                    if (func.Item2 != -1)
+                    var functionString = func.Item1;
+
+                    var indexOfColon = functionString.IndexOf(':');
+                    var indexOfParenthesis = functionString.IndexOf('(');
+                    var indexOfPeriod = functionString.IndexOf('|');
+
+                    var functionName = functionString.Substring(0, indexOfColon);
+                    //Console.WriteLine (FunctionName);
+                    string[] functionParameters;
+                    string functionContents;
+                    if (indexOfPeriod != -1 && indexOfParenthesis > indexOfPeriod)
                     {
-                        var functionString = func.Item1;
-
-                        var indexOfColon = functionString.IndexOf(':');
-                        var indexOfParenthesis = functionString.IndexOf('(');
-                        var indexOfPeriod = functionString.IndexOf('|');
-
-                        var functionName = functionString.Substring(0, indexOfColon);
-                        //Console.WriteLine (FunctionName);
-                        string[] functionParameters;
-                        string functionContents;
-                        if (indexOfPeriod != -1 && indexOfParenthesis > indexOfPeriod)
-                        {
-                            functionParameters = functionString.Substring(indexOfColon + 1, indexOfPeriod - indexOfColon - 1).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(x => Prefix + x).ToArray();
-                            functionContents = functionString.Substring(indexOfPeriod + 1);
-                        }
-                        else
-                        {
-                            functionParameters = new string[0];
-                            functionContents = functionString.Substring(indexOfParenthesis);
-                        }
-                        var functionFixedParams = !functionParameters.Contains("...");
-                        var axFunc = new AxFunction(functionParameters, functionContents, Prefix, functionFixedParams);
-                        axFunc.GetDynamicTags();
-                        Functions.Add(Prefix + functionName, axFunc);
-                        if (axFunc.Tags.ContainsKey("EntryPoint"))
-                        {
-                            EntryPoint = functionName;
-                        }
-
-                        foreach (var t in axFunc.Tags.Where(t => Hooks.ContainsKey(t.Key)))
-                        {
-                            Hooks[t.Key].Call(this, axFunc);
-                        }
-
-                        i += func.Item2;
+                        functionParameters = functionString.Substring(indexOfColon + 1, indexOfPeriod - indexOfColon - 1).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(x => Prefix + x).ToArray();
+                        functionContents = functionString.Substring(indexOfPeriod + 1);
                     }
                     else
                     {
-                        Console.WriteLine("Invalid function");
+                        functionParameters = new string[0];
+                        functionContents = functionString.Substring(indexOfParenthesis);
                     }
+                    var functionFixedParams = !functionParameters.Contains("...");
+                    var axFunc = new AxFunction(functionParameters, functionContents, Prefix, functionFixedParams);
+                    axFunc.GetDynamicTags();
+                    Functions.Add(Prefix + functionName, axFunc);
+                    if (axFunc.Tags.ContainsKey("EntryPoint"))
+                    {
+                        EntryPoint = functionName;
+                    }
+
+                    foreach (var t in axFunc.Tags.Where(t => Hooks.ContainsKey(t.Key)))
+                    {
+                        Hooks[t.Key].Call(this, axFunc);
+                    }
+
+                    i += func.Item2;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid function");
                 }
             }
         }
@@ -1095,44 +1092,42 @@ namespace axScript3
                     }
                 }
                 //Toggle String Mode
-                if (!inComment)
+                if (inComment) continue;
+                if (Script[i + 1] == '"')
                 {
-                    if (Script[i + 1] == '"')
+                    if (Script[i] != '/')
                     {
-                        if (Script[i] != '/')
-                        {
-                            inStr = !inStr;
-                        }
+                        inStr = !inStr;
                     }
-                    if (!inStr)
+                }
+                if (!inStr)
+                {
+                    //Remove Comments
+                    if (Script[i] == '/')
                     {
-                        //Remove Comments
-                        if (Script[i] == '/')
+                        if (Script[i + 1] == '/')
                         {
-                            if (Script[i + 1] == '/')
-                            {
-                                inComment = true;
-                                continue;
-                            }
-                        }
-                        //Remove and store Compiler Statements
-                        if (Script[i] == '#' && (i == 0 || Script[i - 1] == '\n'))
-                        {
-                            inCompStatement = true;
+                            inComment = true;
                             continue;
                         }
                     }
-
-                    if (inCompStatement && Script[i] != '\r')
+                    //Remove and store Compiler Statements
+                    if (Script[i] == '#' && (i == 0 || Script[i - 1] == '\n'))
                     {
-                        compStateBuffer.Append(Script[i]);
+                        inCompStatement = true;
                         continue;
                     }
+                }
 
-                    if (!(IsNewLine(Script[i]) || Script[i] == '\t' || (i > 0 && Script[i] == ' ' && Script[i - 1] == ' ')))
-                    {
-                        sb.Append(Script[i]);
-                    }
+                if (inCompStatement && Script[i] != '\r')
+                {
+                    compStateBuffer.Append(Script[i]);
+                    continue;
+                }
+
+                if (!(IsNewLine(Script[i]) || Script[i] == '\t' || (i > 0 && Script[i] == ' ' && Script[i - 1] == ' ')))
+                {
+                    sb.Append(Script[i]);
                 }
             }
 
@@ -1158,17 +1153,18 @@ namespace axScript3
 
         public string ConvertToRealPath(String inp)
         {
-            if (inp[0] == '"' || inp[0] == '<')
+            if (inp[0] != '"' && inp[0] != '<')
             {
-                var f = inp.Substring(1, inp.Length - 2);
-
-                if (inp[0] == '"')
-                {
-                    f = Path.Combine(_runPathStack.Peek(), f);
-                }
-                return f;
+                throw new AxException(this, "Invalid path specified. You need to encapsulate in quotations (relative) or angle brackets (absolute).");
             }
-            throw new AxException(this, "Invalid path specified. You need to encapsulate in quotations (relative) or angle brackets (absolute).");
+
+            var f = inp.Substring(1, inp.Length - 2);
+
+            if (inp[0] == '"')
+            {
+                f = Path.Combine(_runPathStack.Peek(), f);
+            }
+            return f;
         }
 
         public static bool IsNewLine(char c)

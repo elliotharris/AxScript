@@ -114,3 +114,7 @@ _ReSharper.*
 
 # mstest test results
 TestResults
+Exit/obj/Debug/Exit.csproj.FileListAbsolute.txt
+*.cache
+Exit/obj/Debug/Exit.csprojResolveAssemblyReference.cache
+axScript3 Console/bin/Debug/CommandLine.xml

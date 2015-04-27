@@ -14,8 +14,7 @@ namespace axScript3Console
             try
             {
                 var consoleOptions = new ConsoleOptions();
-                var parser = new CommandLineParser();
-                if (!parser.ParseArguments(args, consoleOptions))
+                if (!Parser.Default.ParseArguments(args, consoleOptions))
                 {
                     throw new Exception("Invalid options specified");
                 }

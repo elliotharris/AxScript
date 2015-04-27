@@ -114,8 +114,3 @@ _ReSharper.*
 
 # mstest test results
 TestResults
-*.cache
-*.cache
-Sockets/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
-Sockets/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
-*.cache

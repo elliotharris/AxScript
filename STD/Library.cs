@@ -68,6 +68,12 @@ namespace STD
             return input is string ? (byte) input[0] : (byte) input;
         }
 
+        [ExportAx("convert>char", "Converts a byte to a char (then to a string).")]
+        public static string GetChar(dynamic input)
+        {
+            return ((char) input).ToString();
+        }
+
         [ExportAx("read", "Reads in a line.")]
         public static string ReadIn(string prompt = "")
         {

@@ -26,7 +26,7 @@ namespace axScript3Console
                 if (consoleOptions.Timing)
                 {
                     long elapsedTotal = 0;
-                    int times = consoleOptions.Time;
+                    var times = consoleOptions.Time;
                     while (times > 0)
                     {
                         var s = Stopwatch.StartNew();

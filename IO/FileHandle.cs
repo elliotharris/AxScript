@@ -29,7 +29,7 @@ namespace IO
 
         public char read()
         {
-            int x = _reader.Read();
+            var x = _reader.Read();
             if (x == -1)
             {
                 return '\0';
